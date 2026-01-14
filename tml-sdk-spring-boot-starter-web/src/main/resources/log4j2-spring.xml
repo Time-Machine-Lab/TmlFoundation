@@ -20,7 +20,7 @@
         <!-- 文件滚动输出 -->
         <RollingFile name="RollingFile"
                      fileName="${PATH}/${FILE_NAME}/${FILE_NAME}.log"
-                     filePattern="${PATH}/${FILE_NAME}/%d{yyyy-MM-dd}/%d{yyyy-MM-dd_HH}.log.gz">
+                     filePattern="${PATH}/${FILE_NAME}/%d{yyyy-MM-dd}/%d{yyyy-MM-dd_HH}-%i.log.gz">
             <JsonLayout compact="true" eventEol="true" includeStacktrace="true" locationInfo="false" properties="true">
                 <KeyValuePair key="app" value="${FILE_NAME}"/>
                 <KeyValuePair key="env" value="${ENV}"/>
@@ -29,7 +29,16 @@
             <Policies>
                 <!-- 每小时滚动一次 -->
                 <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!-- 单个文件超过指定大小时滚动 -->
+                <SizeBasedTriggeringPolicy size="${FILE_MAX_SIZE}"/>
             </Policies>
+            <DefaultRolloverStrategy>
+                <!-- 删除超过指定天数的日志文件 -->
+                <Delete basePath="${PATH}/${FILE_NAME}" maxDepth="2">
+                    <IfFileName glob="*/*.log.gz"/>
+                    <IfLastModified age="${FILE_MAX_DAYS}d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
         </RollingFile>
     </Appenders>
 

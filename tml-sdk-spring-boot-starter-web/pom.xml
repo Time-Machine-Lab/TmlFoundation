@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>tml-sdk-spring-boot-starter-web</artifactId>
-    <name>tml-sdk-java-web</name>
+    <name>tml-sdk-spring-boot-starter-web</name>
     <description>TmlFoundation Web SDK</description>
     <url>https://github.com/Time-Machine-Lab/TmlFoundation</url>
 
@@ -30,6 +30,30 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <!-- 使用log4j2作为底层日志，故需要先排除logback -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!-- 引入 Log4j2 依赖 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+        </dependency>
+
+        <!-- AOP 支持，用于定时任务 traceId 切面 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
 
         <!--springBoot-test-->

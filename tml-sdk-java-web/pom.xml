@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.github.timemachinelab</groupId>
         <artifactId>TmlFoundation</artifactId>
-        <version>1.0.0-SNAPSHOT</version>
+        <version>1.1.0-alpha.2</version>
     </parent>
 
     <artifactId>tml-sdk-java-web</artifactId>
@@ -32,4 +32,10 @@
             <artifactId>jackson-annotations</artifactId>
         </dependency>
     </dependencies>
+    <scm>
+        <tag>master</tag>
+        <url>https://github.com/Time-Machine-Lab/TmlFoundation</url>
+        <connection>scm:git:https://github.com/Time-Machine-Lab/TmlFoundation.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/Time-Machine-Lab/TmlFoundation.git</developerConnection>
+    </scm>
 </project>

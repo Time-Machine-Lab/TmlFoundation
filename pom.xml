@@ -6,7 +6,7 @@
 
     <groupId>io.github.timemachinelab</groupId>
     <artifactId>TmlFoundation</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.1.0-alpha.2</version>
     <packaging>pom</packaging>
     <name>TmlFoundation</name>
     <description>TmlFoundation</description>
@@ -28,10 +28,12 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <spring-boot.version>2.3.9.RELEASE</spring-boot.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <!-- 引入 tml-sdk-java-bom 进行版本管理 -->
             <dependency>
                 <groupId>io.github.timemachinelab</groupId>
                 <artifactId>tml-sdk-java-bom</artifactId>
@@ -68,6 +70,10 @@
     </licenses>
 
     <distributionManagement>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
+        </snapshotRepository>
         <repository>
             <id>ossrh</id>
             <name>Nexus Release Repository</name>
@@ -133,6 +139,10 @@
                 <configuration>
                     <publishingServerId>ossrh</publishingServerId>
                     <autoPublish>true</autoPublish>
+                    <waitUntil>published</waitUntil>
+                    <excludeArtifacts>
+                        <excludeArtifact>io.github.timemachinelab:TmlFoundation</excludeArtifact>
+                    </excludeArtifacts>
                 </configuration>
             </plugin>
             
@@ -149,6 +159,31 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.2.5</version>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.5.0</version>
+                <configuration>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

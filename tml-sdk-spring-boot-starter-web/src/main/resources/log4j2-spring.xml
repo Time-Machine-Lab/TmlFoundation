@@ -21,7 +21,7 @@
         <RollingFile name="RollingFile"
                      fileName="${PATH}/${FILE_NAME}/${FILE_NAME}.log"
                      filePattern="${PATH}/${FILE_NAME}/%d{yyyy-MM-dd}/%d{yyyy-MM-dd_HH}-%i.log.gz">
-            <JsonLayout compact="true" eventEol="true" includeStacktrace="true" locationInfo="false" properties="true">
+            <JsonLayout compact="true" eventEol="true" includeStacktrace="true" locationInfo="false">
                 <KeyValuePair key="app" value="${FILE_NAME}"/>
                 <KeyValuePair key="env" value="${ENV}"/>
                 <KeyValuePair key="traceId" value="${ctx:traceId}"/>

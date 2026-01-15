@@ -1,13 +1,16 @@
 package io.github.timemachinelab.log.config;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.LoggerContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 
+/**
+ * @Author glser
+ * @Date 2026/01/15
+ * @description: 从yml中加载日志相关配置
+ */
 public class TmlLogEnvPostProcessor implements EnvironmentPostProcessor, Ordered {
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {

@@ -3,8 +3,9 @@ package io.github.timemachinelab.log.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * 供外部项目提供yml配置进行加载
- * 配置项前缀：tml.log
+ * @Author glser
+ * @Date 2026/01/15
+ * @description:  供外部项目提供yml配置进行加载  配置项前缀：tml.log
  */
 @ConfigurationProperties(TmlLog.PREFIX)
 public class TmlLogProperties {

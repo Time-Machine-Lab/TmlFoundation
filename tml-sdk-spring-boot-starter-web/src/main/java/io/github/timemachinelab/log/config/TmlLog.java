@@ -3,7 +3,9 @@ package io.github.timemachinelab.log.config;
 import java.util.UUID;
 
 /**
- * 日志配置键统一管理
+ * @Author glser
+ * @Date 2026/01/15
+ * @description: 日志配置键统一管理
  */
 public enum TmlLog {
 

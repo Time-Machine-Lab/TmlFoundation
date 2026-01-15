@@ -11,6 +11,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.scheduling.annotation.Scheduled;
 
+/**
+ * @Author glser
+ * @Date 2026/01/15
+ * @description: 日志自动配置类
+ */
 @Configuration
 @EnableConfigurationProperties(TmlLogProperties.class)
 public class TmlLogAutoConfiguration {

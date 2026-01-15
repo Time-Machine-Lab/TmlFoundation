@@ -47,3 +47,31 @@ tml:
       trace-enabled: true
       trace-id-strategy: TIMESTAMP_RANDOM
       timestamp-precision: SECONDS
+
+---
+# 日志模块测试
+spring:
+  config:
+    activate:
+      on-profile: test-log
+  profiles:
+    active: ${ACTIVE:prod}
+tml:
+  log:
+    file-name: testLog
+    path: ./app/logs
+
+
+---
+# TraceId 过滤器测试
+spring:
+  config:
+    activate:
+      on-profile: test-trace
+
+tml:
+  log:
+    enable: true
+    trace: true
+    file-name: trace-test
+    path: ./app/logs

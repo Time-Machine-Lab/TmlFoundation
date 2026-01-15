@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    <Properties>
+        <Property name="FILE_NAME">${sys:tml.log.fileName}</Property>
+        <Property name="PATH">${sys:tml.log.path}</Property>
+        <Property name="LEVEL">${sys:tml.log.level}</Property>
+        <Property name="FILE_MAX_SIZE">${sys:tml.log.fileMaxSize}</Property>
+        <Property name="FILE_MAX_DAYS">${sys:tml.log.fileMaxDays}</Property>
+        <Property name="CONSOLE_PATTERN">%d{sys-MM-dd HH:mm:ss} %highlight{[%X{traceId}]} [%thread] %highlight{%-5level}{FATAL=red, ERROR=red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=blue} %style{%logger{36}}{cyan} - %msg%n</Property>
+        <Property name="CHARSET">${sys:tml.log.charset}</Property>
+        <Property name="ENV">${sys:tml.log.env}</Property>
+    </Properties>
+
+    <Appenders>
+        <!-- 控制台输出 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${CONSOLE_PATTERN}" charset="${CHARSET}" disableAnsi="false"/>
+        </Console>
+
+        <!-- 文件滚动输出 -->
+        <RollingFile name="RollingFile"
+                     fileName="${PATH}/${FILE_NAME}/${FILE_NAME}.log"
+                     filePattern="${PATH}/${FILE_NAME}/%d{yyyy-MM-dd}/%d{yyyy-MM-dd_HH}-%i.log.gz">
+            <JsonLayout compact="true" eventEol="true" includeStacktrace="true" locationInfo="false">
+                <KeyValuePair key="app" value="${FILE_NAME}"/>
+                <KeyValuePair key="env" value="${ENV}"/>
+                <KeyValuePair key="traceId" value="${ctx:traceId}"/>
+            </JsonLayout>
+            <Policies>
+                <!-- 每小时滚动一次 -->
+                <TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+                <!-- 单个文件超过指定大小时滚动 -->
+                <SizeBasedTriggeringPolicy size="${FILE_MAX_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy>
+                <!-- 删除超过指定天数的日志文件 -->
+                <Delete basePath="${PATH}/${FILE_NAME}" maxDepth="2">
+                    <IfFileName glob="*/*.log.gz"/>
+                    <IfLastModified age="${FILE_MAX_DAYS}d"/>
+                </Delete>
+            </DefaultRolloverStrategy>
+        </RollingFile>
+    </Appenders>
+
+    <Loggers>
+        <Root level="${LEVEL}">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="RollingFile"/>
+        </Root>
+
+        <!-- 过滤所有框架 INFO 日志 -->
+        <Logger name="org.springframework" level="WARN" additivity="false"/>
+        <Logger name="org.mybatis" level="WARN" additivity="false"/>
+        <Logger name="org.apache" level="WARN" additivity="false"/>
+        <Logger name="com.zaxxer" level="WARN" additivity="false"/>
+        <Logger name="io.lettuce" level="WARN" additivity="false"/>
+        <Logger name="com.alibaba" level="WARN" additivity="false"/>
+        <Logger name="org.quartz" level="WARN" additivity="false"/>
+    </Loggers>
+</Configuration>

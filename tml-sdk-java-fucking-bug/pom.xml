@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.github.timemachinelab</groupId>
         <artifactId>TmlFoundation</artifactId>
-        <version>1.1.0-alpha.2</version>
+        <version>1.1.0-alpha.3</version>
     </parent>
 
     <artifactId>tml-sdk-java-fucking-bug</artifactId>

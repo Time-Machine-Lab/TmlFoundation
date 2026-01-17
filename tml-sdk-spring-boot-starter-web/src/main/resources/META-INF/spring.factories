@@ -1,6 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-io.github.timemachinelab.common.resp.result.TmlWebResultAutoConfiguration,\
-io.github.timemachinelab.log.config.TmlLogAutoConfiguration
-
-org.springframework.boot.env.EnvironmentPostProcessor=\
-io.github.timemachinelab.log.config.TmlLogEnvPostProcessor
+io.github.timemachinelab.common.resp.result.TmlWebResultAutoConfiguration

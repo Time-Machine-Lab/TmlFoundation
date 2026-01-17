@@ -1,121 +1,120 @@
 package io.github.timemachinelab.log.config;
 
+import io.github.timemachinelab.constant.TmlConstant;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * @Author glser
- * @Date 2026/01/15
- * @description:  供外部项目提供yml配置进行加载  配置项前缀：tml.log
+ * yml提供配置
+ *
+ * @author glser
+ * @since 2026/01/16
  */
-@ConfigurationProperties(TmlLog.PREFIX)
+@ConfigurationProperties(TmlConstant.LOG)
 public class TmlLogProperties {
 
-    private boolean enable = Boolean.parseBoolean(TmlLog.ENABLE.value());
+    private boolean enable = true;
 
-    private String fileName = TmlLog.FILE_NAME.value();
+    private String fileName = TmlLogConstant.FILE_NAME_VALUE;
 
-    private String path = TmlLog.PATH.value();
+    private String path = TmlLogConstant.PATH_VALUE;
 
-    private String level = TmlLog.LEVEL.value();
+    private TmlLogConstant.Level level = TmlLogConstant.Level.INFO;
 
-    private String fileMaxSize = TmlLog.FILE_MAX_SIZE.value();
+    private String fileMaxSize = TmlLogConstant.FILE_MAX_SIZE_VALUE;
 
-    private String fileMaxDays = TmlLog.FILE_MAX_DAYS.value();
+    private String fileMaxDays = TmlLogConstant.FILE_MAX_DAYS_VALUE;
 
-    private String charset = TmlLog.CHARSET.value();
+    private String charset = TmlLogConstant.CHARSET_VALUE;
 
-    private boolean trace = Boolean.parseBoolean(TmlLog.TRACE.value());
+    private boolean traceId = true;
 
-    private String env = TmlLog.ENV.value();
+    private TmlLogConstant.Env env = TmlLogConstant.Env.PROD;
 
     public void apply() {
-        setProperty(TmlLog.ENABLE, String.valueOf(enable));
-        setProperty(TmlLog.FILE_NAME, fileName);
-        setProperty(TmlLog.PATH, path);
-        setProperty(TmlLog.LEVEL, level);
-        setProperty(TmlLog.FILE_MAX_SIZE, fileMaxSize);
-        setProperty(TmlLog.FILE_MAX_DAYS, fileMaxDays);
-        setProperty(TmlLog.CHARSET, charset);
-        setProperty(TmlLog.TRACE, String.valueOf(trace));
-        setProperty(TmlLog.ENV, env);
+        System.setProperty(key(TmlLogConstant.ENABLE), String.valueOf(enable));
+        System.setProperty(key(TmlLogConstant.FILE_NAME), fileName);
+        System.setProperty(key(TmlLogConstant.PATH), path);
+        System.setProperty(key(TmlLogConstant.LEVEL), String.valueOf(level));
+        System.setProperty(key(TmlLogConstant.FILE_MAX_SIZE), fileMaxSize);
+        System.setProperty(key(TmlLogConstant.FILE_MAX_DAYS), fileMaxDays);
+        System.setProperty(key(TmlLogConstant.CHARSET), charset);
+        System.setProperty(key(TmlLogConstant.TRACE_ID), String.valueOf(traceId));
+        System.setProperty(key(TmlLogConstant.ENV), String.valueOf(env));
     }
 
-    private void setProperty(TmlLog tmlLog, String value) {
-        if (value == null) {
-            return;
-        }
-        System.setProperty(TmlLog.PREFIX + "." + tmlLog.key(), value);
-    }
-
-    public void setEnable(boolean enable) {
-        this.enable = enable;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public void setLevel(String level) {
-        this.level = level;
-    }
-
-    public void setFileMaxSize(String fileMaxSize) {
-        this.fileMaxSize = fileMaxSize;
-    }
-
-    public void setFileMaxDays(String fileMaxDays) {
-        this.fileMaxDays = fileMaxDays;
-    }
-
-    public void setCharset(String charset) {
-        this.charset = charset;
-    }
-
-    public void setTrace(boolean trace) {
-        this.trace = trace;
-    }
-
-    public void setEnv(String env) {
-        this.env = env;
+    private String key(String value) {
+        return TmlConstant.LOG + "." + value;
     }
 
     public boolean isEnable() {
         return enable;
     }
 
+    public void setEnable(boolean enable) {
+        this.enable = enable;
+    }
+
     public String getFileName() {
         return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public String getPath() {
         return path;
     }
 
-    public String getLevel() {
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public TmlLogConstant.Level getLevel() {
         return level;
+    }
+
+    public void setLevel(TmlLogConstant.Level level) {
+        this.level = level;
     }
 
     public String getFileMaxSize() {
         return fileMaxSize;
     }
 
+    public void setFileMaxSize(String fileMaxSize) {
+        this.fileMaxSize = fileMaxSize;
+    }
+
     public String getFileMaxDays() {
         return fileMaxDays;
+    }
+
+    public void setFileMaxDays(String fileMaxDays) {
+        this.fileMaxDays = fileMaxDays;
     }
 
     public String getCharset() {
         return charset;
     }
 
-    public boolean isTrace() {
-        return trace;
+    public void setCharset(String charset) {
+        this.charset = charset;
     }
 
-    public String getEnv() {
+    public boolean isTraceId() {
+        return traceId;
+    }
+
+    public void setTraceId(boolean traceId) {
+        this.traceId = traceId;
+    }
+
+    public TmlLogConstant.Env getEnv() {
         return env;
+    }
+
+    public void setEnv(String env) {
+        this.env = TmlLogConstant.Env.valueOf(env);
     }
 }

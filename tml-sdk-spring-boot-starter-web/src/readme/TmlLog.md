@@ -21,7 +21,7 @@ TmlLog 是一个开箱即用的日志配置模块，提供统一的日志格式�
 | `fileMaxSize` | 单个日志文件最大大小 | `100M` |
 | `fileMaxDays` | 日志文件保留天数 | `7` |
 | `charset` | 日志字符编码 | `UTF-8` |
-| `trace` | 是否启用链路追踪 | `true` |
+| `traceId` | 是否启用链路追踪 | `true` |
 | `env` | 环境标识（prod/dev/test） | `prod` |
 
 ### 配置示例
@@ -36,7 +36,7 @@ tml:
     fileMaxSize: 200M
     fileMaxDays: 30
     charset: UTF-8
-    trace: true
+    traceId: true
     env: dev
 ```
 
@@ -193,7 +193,7 @@ public class ThreadPoolConfig {
             new LinkedBlockingQueue<>(1000),
             new ThreadPoolExecutor.CallerRunsPolicy()
         );
-        // 用 TmlLogExecutors.wrap 包装
+        // 用 TmlLogExecutorsTrace.wrap 包装
         return TmlLogExecutors.wrap(original);
     }
 }
@@ -318,7 +318,7 @@ Future<String> future = rawExecutor.submit(TmlLogExecutors.wrap(() -> {
 String traceId = TraceIdHolder.get();
 
 // 手动设置 traceId（一般不需要）
-TraceIdHolder.set("custom-trace-id");
+TraceIdHolder.set("custom-traceId-id");
 
 // 清理 traceId
 TraceIdHolder.clear();
@@ -359,7 +359,7 @@ log/
 1. 确保项目中引入了 Log4j2 和阿里 TTL（transmittable-thread-local）依赖
 2. `fileName` 建议设置为应用名称，便于日志区分和 ELK 采集
 3. 生产环境建议 `level` 设置为 `INFO` 或 `WARN`
-4. 链路追踪默认开启，如需关闭设置 `tml.log.trace=false`
+4. 链路追踪默认开启，如需关闭设置 `tml.log.traceId=false`
 5. 使用 `TmlLogExecutors` 创建的线程池或用 `TmlLogExecutors.wrap()` 装饰的线程池，traceId 会自动传递
 6. 使用原始线程池时，需要用 `TmlLogExecutors.wrap()` 包装任务
 7. `CompletableFuture` 需要指定包装后的线程池，否则默认使用 `ForkJoinPool` 无法传递 traceId

@@ -19,7 +19,7 @@ public class TmlLogEnvPostProcessor implements EnvironmentPostProcessor, Ordered
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         // 从application.yml中读取日志相关配置
         TmlLogProperties tmlLogProperties = Binder.get(environment)
-                .bind(TmlConstant.PREFIX, TmlLogProperties.class)
+                .bind(TmlConstant.LOG, TmlLogProperties.class)
                 .orElseGet(TmlLogProperties::new);
         // 加载数据到环境变量
         if (tmlLogProperties == null || !tmlLogProperties.isEnable()) {
@@ -27,9 +27,6 @@ public class TmlLogEnvPostProcessor implements EnvironmentPostProcessor, Ordered
             System.setProperty("logging.config", "classpath:log4j2-noop.xml");
             return;
         }
-        // env从spring.profiles.active获取
-        String env = environment.getProperty("spring.profiles.active");
-        tmlLogProperties.setEnv(env);
         tmlLogProperties.apply();
     }
 

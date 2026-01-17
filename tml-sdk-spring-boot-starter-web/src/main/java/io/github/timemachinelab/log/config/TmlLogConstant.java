@@ -10,7 +10,7 @@ public class TmlLogConstant {
 
     public static final String ENABLE = "enable";
 
-    public static final String FILE_NAME = "name";
+    public static final String FILE_NAME = "fileName";
 
     public static final String PATH = "path";
 

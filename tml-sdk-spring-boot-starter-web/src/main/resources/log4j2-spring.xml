@@ -6,7 +6,7 @@
         <Property name="LEVEL">${sys:tml.log.level}</Property>
         <Property name="FILE_MAX_SIZE">${sys:tml.log.fileMaxSize}</Property>
         <Property name="FILE_MAX_DAYS">${sys:tml.log.fileMaxDays}</Property>
-        <Property name="CONSOLE_PATTERN">%d{sys-MM-dd HH:mm:ss} %highlight{[%X{traceId}]} [%thread] %highlight{%-5level}{FATAL=red, ERROR=red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=blue} %style{%logger{36}}{cyan} - %msg%n</Property>
+        <Property name="CONSOLE_PATTERN">%d{yyyy-MM-dd HH:mm:ss} %highlight{[%X{traceId}]} [%thread] %highlight{%-5level}{FATAL=red, ERROR=red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=blue} %style{%logger{36}}{cyan} - %msg%n</Property>
         <Property name="CHARSET">${sys:tml.log.charset}</Property>
         <Property name="ENV">${sys:tml.log.env}</Property>
     </Properties>

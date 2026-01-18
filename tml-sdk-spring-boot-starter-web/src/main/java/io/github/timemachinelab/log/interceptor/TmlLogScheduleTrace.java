@@ -1,9 +1,9 @@
 package io.github.timemachinelab.log.interceptor;
 
 import io.github.timemachinelab.log.context.TraceContext;
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
+import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 
 /**
  * 定时任务 TraceId 切面
@@ -15,16 +15,19 @@ import org.aspectj.lang.annotation.Aspect;
 @Aspect
 public class TmlLogScheduleTrace {
 
-    @Around("@annotation(org.springframework.scheduling.annotation.Scheduled)")
-    public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
+    @Before("execution(* *(..)) && @annotation(org.springframework.scheduling.annotation.Scheduled)")
+    public void beforeMethod() {
         TraceContext traceContext = TraceContext.Holder.get();
-        try {
-            // 生成新的 traceId
-            String traceId = traceContext.generateTraceId();
-            traceContext.set(traceContext.getTraceIdKey(), traceId);
-            return joinPoint.proceed();
-        } finally {
-            traceContext.remove(traceContext.getTraceIdKey());
-        }
+        traceContext.set(traceContext.getTraceIdKey(), traceContext.generateTraceId());
+    }
+
+    /**
+     * 任务执行后清除TraceId
+     * 确保线程池复用不会导致TraceId污染
+     */
+    @After("@annotation(org.springframework.scheduling.annotation.Scheduled)")
+    public void afterMethod() {
+        TraceContext traceContext = TraceContext.Holder.get();
+        traceContext.clear();
     }
 }

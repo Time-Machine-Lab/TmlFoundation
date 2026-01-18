@@ -1,7 +1,7 @@
 package io.github.timemachinelab.log;
 
 import io.github.timemachinelab.log.config.TmlLogConstant;
-import io.github.timemachinelab.log.context.TraceContext;
+import io.github.timemachinelab.log.context.TmlLogTraceContext;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -177,8 +177,8 @@ public class TmlLogBusinessScenarioTest {
 
         @PostMapping
         public OrderResponse createOrder(@RequestBody OrderRequest request) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Controller] 接收创建订单请求 - userId: {}, productId: {}, quantity: {}, traceId: {}", 
                     request.getUserId(), request.getProductId(), request.getQuantity(), traceId);
@@ -196,8 +196,8 @@ public class TmlLogBusinessScenarioTest {
 
         @GetMapping("/{orderId}")
         public OrderDetailResponse getOrderDetail(@PathVariable Long orderId) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Controller] 查询订单详情 - orderId: {}, traceId: {}", orderId, traceId);
             
@@ -216,8 +216,8 @@ public class TmlLogBusinessScenarioTest {
         public OrderListResponse getOrderList(@RequestParam Long userId,
                                               @RequestParam(defaultValue = "1") Integer page,
                                               @RequestParam(defaultValue = "10") Integer size) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Controller] 查询订单列表 - userId: {}, page: {}, size: {}, traceId: {}", 
                     userId, page, size, traceId);
@@ -235,8 +235,8 @@ public class TmlLogBusinessScenarioTest {
 
         @PutMapping("/{orderId}/cancel")
         public OrderResponse cancelOrder(@PathVariable Long orderId, @RequestBody CancelRequest request) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Controller] 取消订单 - orderId: {}, reason: {}, traceId: {}", 
                     orderId, request.getReason(), traceId);
@@ -253,8 +253,8 @@ public class TmlLogBusinessScenarioTest {
 
         @PostMapping("/{orderId}/pay")
         public PaymentResponse payOrder(@PathVariable Long orderId, @RequestBody PaymentRequest request) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Controller] 订单支付 - orderId: {}, payMethod: {}, amount: {}, traceId: {}", 
                     orderId, request.getPayMethod(), request.getAmount(), traceId);
@@ -272,8 +272,8 @@ public class TmlLogBusinessScenarioTest {
 
         @PostMapping("/complex")
         public OrderResponse createComplexOrder(@RequestBody ComplexOrderRequest request) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Controller] 创建复杂订单 - userId: {}, itemCount: {}, traceId: {}", 
                     request.getUserId(), request.getItems().size(), traceId);
@@ -308,8 +308,8 @@ public class TmlLogBusinessScenarioTest {
         private NotificationService notificationService;
 
         public OrderResponse createOrder(OrderRequest request) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Service] 开始处理订单创建 - userId: {}, traceId: {}", request.getUserId(), traceId);
             
@@ -335,8 +335,8 @@ public class TmlLogBusinessScenarioTest {
         }
 
         public OrderDetailResponse getOrderDetail(Long orderId) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Service] 查询订单详情 - orderId: {}, traceId: {}", orderId, traceId);
             
@@ -352,8 +352,8 @@ public class TmlLogBusinessScenarioTest {
         }
 
         public OrderListResponse getOrderList(Long userId, Integer page, Integer size) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Service] 查询订单列表 - userId: {}, page: {}, size: {}, traceId: {}", 
                     userId, page, size, traceId);
@@ -370,8 +370,8 @@ public class TmlLogBusinessScenarioTest {
         }
 
         public OrderResponse cancelOrder(Long orderId, String reason) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Service] 开始取消订单 - orderId: {}, reason: {}, traceId: {}", orderId, reason, traceId);
             
@@ -397,8 +397,8 @@ public class TmlLogBusinessScenarioTest {
         }
 
         public PaymentResponse payOrder(Long orderId, PaymentRequest request) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Service] 开始订单支付 - orderId: {}, payMethod: {}, traceId: {}", 
                     orderId, request.getPayMethod(), traceId);
@@ -428,8 +428,8 @@ public class TmlLogBusinessScenarioTest {
         }
 
         public OrderResponse createComplexOrder(ComplexOrderRequest request) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Service] 开始创建复杂订单 - userId: {}, itemCount: {}, traceId: {}", 
                     request.getUserId(), request.getItems().size(), traceId);
@@ -490,8 +490,8 @@ public class TmlLogBusinessScenarioTest {
     static class OrderRepository {
 
         public Long saveOrder(OrderRequest request) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Repository] 保存订单到数据库 - userId: {}, productId: {}, traceId: {}", 
                     request.getUserId(), request.getProductId(), traceId);
@@ -505,8 +505,8 @@ public class TmlLogBusinessScenarioTest {
         }
 
         public OrderDetailResponse findOrderById(Long orderId) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Repository] 从数据库查询订单 - orderId: {}, traceId: {}", orderId, traceId);
             
@@ -527,8 +527,8 @@ public class TmlLogBusinessScenarioTest {
         }
 
         public OrderListResponse findOrdersByUserId(Long userId, Integer page, Integer size) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Repository] 分页查询用户订单 - userId: {}, page: {}, size: {}, traceId: {}", 
                     userId, page, size, traceId);
@@ -547,8 +547,8 @@ public class TmlLogBusinessScenarioTest {
         }
 
         public void updateOrderStatus(Long orderId, String status) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Repository] 更新订单状态 - orderId: {}, status: {}, traceId: {}", 
                     orderId, status, traceId);
@@ -560,8 +560,8 @@ public class TmlLogBusinessScenarioTest {
         }
 
         public Long saveComplexOrder(ComplexOrderRequest request) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Repository] 保存复杂订单 - userId: {}, itemCount: {}, traceId: {}", 
                     request.getUserId(), request.getItems().size(), traceId);
@@ -582,8 +582,8 @@ public class TmlLogBusinessScenarioTest {
     static class InventoryService {
 
         public void checkInventory(Long productId, Integer quantity) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[InventoryService] 检查库存 - productId: {}, quantity: {}, traceId: {}", 
                     productId, quantity, traceId);
@@ -594,8 +594,8 @@ public class TmlLogBusinessScenarioTest {
         }
 
         public void restoreInventory(Long orderId) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[InventoryService] 恢复库存 - orderId: {}, traceId: {}", orderId, traceId);
             
@@ -604,8 +604,8 @@ public class TmlLogBusinessScenarioTest {
         }
 
         public void batchCheckInventory(List<OrderItem> items) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[InventoryService] 批量检查库存 - itemCount: {}, traceId: {}", items.size(), traceId);
             
@@ -618,8 +618,8 @@ public class TmlLogBusinessScenarioTest {
         }
 
         public void batchDeductInventory(Long orderId, List<OrderItem> items) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[InventoryService] 批量扣减库存 - orderId: {}, itemCount: {}, traceId: {}", 
                     orderId, items.size(), traceId);
@@ -638,8 +638,8 @@ public class TmlLogBusinessScenarioTest {
     static class PaymentService {
 
         public String processPayment(Long orderId, PaymentRequest request) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[PaymentService] 处理支付 - orderId: {}, payMethod: {}, amount: {}, traceId: {}", 
                     orderId, request.getPayMethod(), request.getAmount(), traceId);
@@ -659,12 +659,12 @@ public class TmlLogBusinessScenarioTest {
     static class NotificationService {
 
         public void sendPaymentNotification(Long orderId, String paymentId) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             // 异步发送通知
             CompletableFuture.runAsync(() -> {
-                String asyncTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+                String asyncTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
                 log.info("[NotificationService] 异步发送支付通知 - orderId: {}, paymentId: {}, traceId: {}", 
                         orderId, paymentId, asyncTraceId);
                 

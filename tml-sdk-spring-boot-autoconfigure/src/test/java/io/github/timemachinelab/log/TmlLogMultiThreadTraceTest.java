@@ -1,7 +1,7 @@
 package io.github.timemachinelab.log;
 
 import io.github.timemachinelab.log.config.TmlLogConstant;
-import io.github.timemachinelab.log.context.TraceContext;
+import io.github.timemachinelab.log.context.TmlLogTraceContext;
 import io.github.timemachinelab.log.interceptor.TmlLogExecutorsTrace;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -12,7 +12,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -41,14 +40,14 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 public class TmlLogMultiThreadTraceTest {
 
-    private TraceContext traceContext;
+    private TmlLogTraceContext tmlLogTraceContext;
     private ExecutorService executorService;
 
     @BeforeEach
     public void setUp() {
-        traceContext = TraceContext.Holder.get();
+        tmlLogTraceContext = TmlLogTraceContext.Holder.get();
         // 清理MDC
-        traceContext.clear();
+        tmlLogTraceContext.clear();
     }
 
     @AfterEach
@@ -56,21 +55,21 @@ public class TmlLogMultiThreadTraceTest {
         if (executorService != null && !executorService.isShutdown()) {
             executorService.shutdown();
         }
-        traceContext.clear();
+        tmlLogTraceContext.clear();
     }
 
     @Test
     @DisplayName("测试普通线程池无包装时traceId传递情况")
     public void testNormalThreadPoolTraceId() throws Exception {
         String mainTraceId = "main-thread-trace-id";
-        traceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
         
         ExecutorService normalPool = Executors.newFixedThreadPool(2);
         CountDownLatch latch = new CountDownLatch(1);
         AtomicInteger successCount = new AtomicInteger(0);
         
         normalPool.submit(() -> {
-            String threadTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            String threadTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             log.info("[普通线程池] 主线程traceId: {}, 子线程traceId: {}", mainTraceId, threadTraceId);
             
             // 如果使用了TTL的ThreadContextMap，即使不包装线程池，traceId也能传递
@@ -95,7 +94,7 @@ public class TmlLogMultiThreadTraceTest {
     @DisplayName("测试普通线程池多任务traceId传递")
     public void testThreadPoolMultiTaskTraceId() throws Exception {
         String mainTraceId = "multi-task-trace-id";
-        traceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
         
         ExecutorService pool = Executors.newFixedThreadPool(2);
         
@@ -105,7 +104,7 @@ public class TmlLogMultiThreadTraceTest {
         for (int i = 0; i < 3; i++) {
             final int taskId = i;
             pool.submit(() -> {
-                String threadTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+                String threadTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
                 log.info("[线程池多任务] 任务{} - 主线程traceId: {}, 子线程traceId: {}", 
                         taskId, mainTraceId, threadTraceId);
                 childTraceIds.add(threadTraceId);
@@ -129,14 +128,14 @@ public class TmlLogMultiThreadTraceTest {
     @DisplayName("测试Runnable任务traceId传递")
     public void testRunnableTraceId() throws Exception {
         String mainTraceId = "runnable-trace-id";
-        traceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
         
         ExecutorService pool = Executors.newSingleThreadExecutor();
         CountDownLatch latch = new CountDownLatch(1);
         AtomicInteger successCount = new AtomicInteger(0);
         
         Runnable task = () -> {
-            String threadTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            String threadTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             log.info("[Runnable任务] 主线程traceId: {}, 子线程traceId: {}", mainTraceId, threadTraceId);
             
             if (mainTraceId.equals(threadTraceId)) {
@@ -158,12 +157,12 @@ public class TmlLogMultiThreadTraceTest {
     @DisplayName("测试Callable任务traceId传递")
     public void testCallableTraceId() throws Exception {
         String mainTraceId = "callable-trace-id";
-        traceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
         
         ExecutorService pool = Executors.newSingleThreadExecutor();
         
         Callable<String> task = () -> {
-            String threadTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            String threadTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             log.info("[Callable任务] 主线程traceId: {}, 子线程traceId: {}", mainTraceId, threadTraceId);
             return threadTraceId;
         };
@@ -181,7 +180,7 @@ public class TmlLogMultiThreadTraceTest {
     @DisplayName("测试多层嵌套线程池traceId传递")
     public void testNestedThreadPoolTraceId() throws Exception {
         String mainTraceId = "nested-pool-trace-id";
-        traceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
         
         ExecutorService pool1 = Executors.newFixedThreadPool(2);
         ExecutorService pool2 = Executors.newFixedThreadPool(2);
@@ -190,7 +189,7 @@ public class TmlLogMultiThreadTraceTest {
         AtomicInteger successCount = new AtomicInteger(0);
         
         pool1.submit(() -> {
-            String level1TraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            String level1TraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             log.info("[嵌套线程池-Level1] traceId: {}", level1TraceId);
             
             if (mainTraceId.equals(level1TraceId)) {
@@ -198,7 +197,7 @@ public class TmlLogMultiThreadTraceTest {
             }
             
             pool2.submit(() -> {
-                String level2TraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+                String level2TraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
                 log.info("[嵌套线程池-Level2] traceId: {}", level2TraceId);
                 
                 if (mainTraceId.equals(level2TraceId)) {
@@ -229,13 +228,13 @@ public class TmlLogMultiThreadTraceTest {
             
             pool.submit(() -> {
                 // 每个任务设置自己的traceId
-                traceContext.set(TmlLogConstant.TRACE_ID, taskTraceId);
+                tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, taskTraceId);
                 
                 try {
                     // 模拟业务处理
                     Thread.sleep(10);
                     
-                    String currentTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+                    String currentTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
                     log.info("[并发隔离测试] 期望traceId: {}, 实际traceId: {}", taskTraceId, currentTraceId);
                     
                     results.add(taskTraceId.equals(currentTraceId));
@@ -261,7 +260,7 @@ public class TmlLogMultiThreadTraceTest {
     @DisplayName("测试ScheduledExecutorService的traceId传递")
     public void testScheduledExecutorServiceTraceId() throws Exception {
         String mainTraceId = "scheduled-trace-id";
-        traceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
         
         ScheduledExecutorService scheduled = Executors.newScheduledThreadPool(2);
         
@@ -270,7 +269,7 @@ public class TmlLogMultiThreadTraceTest {
         
         // 测试schedule
         scheduled.schedule(() -> {
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             log.info("[ScheduledExecutor-schedule] traceId: {}", traceId);
             traceIds.add(traceId);
             latch.countDown();
@@ -278,7 +277,7 @@ public class TmlLogMultiThreadTraceTest {
         
         // 测试scheduleAtFixedRate
         ScheduledFuture<?> fixedRateFuture = scheduled.scheduleAtFixedRate(() -> {
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             log.info("[ScheduledExecutor-fixedRate] traceId: {}", traceId);
             traceIds.add(traceId);
             latch.countDown();
@@ -301,7 +300,7 @@ public class TmlLogMultiThreadTraceTest {
     @DisplayName("测试CompletableFuture的traceId传递")
     public void testCompletableFutureTraceId() throws Exception {
         String mainTraceId = "completable-future-trace-id";
-        traceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
         
         ExecutorService pool1 = TmlLogExecutorsTrace.wrap(Executors.newFixedThreadPool(3));
         ExecutorService pool = Executors.newFixedThreadPool(3);
@@ -309,19 +308,19 @@ public class TmlLogMultiThreadTraceTest {
         
         CompletableFuture<Void> future = CompletableFuture
                 .supplyAsync(() -> {
-                    String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+                    String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
                     log.info("[CompletableFuture-supply] traceId: {}", traceId);
                     traceIds.add(traceId);
                     return "result";
                 }, pool)
                 .thenApplyAsync(result -> {
-                    String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+                    String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
                     log.info("[CompletableFuture-thenApply] traceId: {}", traceId);
                     traceIds.add(traceId);
                     return result + "-processed";
                 }, pool)
                 .thenAcceptAsync(result -> {
-                    String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+                    String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
                     log.info("[CompletableFuture-thenAccept] result: {}, traceId: {}", result, traceId);
                     traceIds.add(traceId);
                 }, pool);
@@ -342,14 +341,14 @@ public class TmlLogMultiThreadTraceTest {
     @DisplayName("测试线程池关闭后的清理")
     public void testThreadPoolShutdownCleanup() throws Exception {
         String mainTraceId = "shutdown-test-trace-id";
-        traceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
         
         ExecutorService pool = Executors.newFixedThreadPool(2);
         CountDownLatch latch = new CountDownLatch(2);
         
         for (int i = 0; i < 2; i++) {
             pool.submit(() -> {
-                String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+                String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
                 log.info("[线程池关闭测试] traceId: {}", traceId);
                 assertEquals(mainTraceId, traceId);
                 latch.countDown();
@@ -377,13 +376,13 @@ public class TmlLogMultiThreadTraceTest {
             final String taskTraceId = "high-concurrency-" + i;
             
             pool.submit(() -> {
-                traceContext.set(TmlLogConstant.TRACE_ID, taskTraceId);
+                tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, taskTraceId);
                 
                 try {
                     // 模拟复杂业务处理
                     Thread.sleep((long) (Math.random() * 10));
                     
-                    String currentTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+                    String currentTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
                     if (taskTraceId.equals(currentTraceId)) {
                         successCount.incrementAndGet();
                     }

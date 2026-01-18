@@ -30,6 +30,8 @@ public class TmlLogProperties {
 
     private TmlLogConstant.Env env = TmlLogConstant.Env.PROD;
 
+    private String pattern = TmlLogConstant.PATTERN_VALUE;
+
     public void apply() {
         System.setProperty(key(TmlLogConstant.ENABLE), String.valueOf(enable));
         System.setProperty(key(TmlLogConstant.FILE_NAME), fileName);
@@ -40,6 +42,7 @@ public class TmlLogProperties {
         System.setProperty(key(TmlLogConstant.CHARSET), charset);
         System.setProperty(key(TmlLogConstant.TRACE_ID), String.valueOf(traceId));
         System.setProperty(key(TmlLogConstant.ENV), String.valueOf(env));
+        System.setProperty(key(TmlLogConstant.PATTERN), pattern);
     }
 
     private String key(String value) {
@@ -116,5 +119,13 @@ public class TmlLogProperties {
 
     public void setEnv(String env) {
         this.env = TmlLogConstant.Env.valueOf(env);
+    }
+
+    public String getPattern() {
+        return pattern;
+    }
+
+    public void setPattern(String pattern) {
+        this.pattern = pattern;
     }
 }

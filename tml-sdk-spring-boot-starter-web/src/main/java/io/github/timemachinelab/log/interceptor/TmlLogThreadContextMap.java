@@ -1,4 +1,4 @@
-package io.github.timemachinelab.log.mdc;
+package io.github.timemachinelab.log.interceptor;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 import org.apache.logging.log4j.spi.ThreadContextMap;

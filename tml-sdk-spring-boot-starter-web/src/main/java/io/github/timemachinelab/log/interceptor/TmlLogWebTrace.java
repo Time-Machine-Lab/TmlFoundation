@@ -1,7 +1,7 @@
 package io.github.timemachinelab.log.interceptor;
 
 import io.github.timemachinelab.log.config.TmlLogConstant;
-import io.github.timemachinelab.log.context.TraceContext;
+import io.github.timemachinelab.log.context.TmlLogTraceContext;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -22,21 +22,21 @@ public class TmlLogWebTrace extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-        TraceContext traceContext = TraceContext.Holder.get();
+        TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
         try {
             // 首先从请求头获取 traceId
             String traceId = request.getHeader(TmlLogConstant.TRACE_ID_HEADER);
             if (traceId == null || traceId.isEmpty()) {
-                traceId = traceContext.generateTraceId();
+                traceId = tmlLogTraceContext.generateTraceId();
             }
             // 将 traceId 放入 MDC
-            traceContext.set(traceContext.getTraceIdKey(), traceId);
+            tmlLogTraceContext.set(tmlLogTraceContext.getTraceIdKey(), traceId);
             // 响应结果也放入 traceId，后期 elk 查询
-            response.setHeader(traceContext.getTraceIdHeader(), traceId);
+            response.setHeader(tmlLogTraceContext.getTraceIdHeader(), traceId);
             filterChain.doFilter(request, response);
         } finally {
             // 请求结束后清理 MDC，防止线程复用导致数据污染
-            traceContext.remove(TmlLogConstant.TRACE_ID);
+            tmlLogTraceContext.remove(TmlLogConstant.TRACE_ID);
         }
     }
 }

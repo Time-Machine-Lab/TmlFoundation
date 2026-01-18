@@ -1,7 +1,7 @@
 package io.github.timemachinelab.log;
 
 import io.github.timemachinelab.log.config.TmlLogConstant;
-import io.github.timemachinelab.log.context.TraceContext;
+import io.github.timemachinelab.log.context.TmlLogTraceContext;
 import io.github.timemachinelab.log.interceptor.TmlLogExecutorsTrace;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
@@ -33,31 +33,31 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 public class TmlLogTtlVerificationTest {
 
-    private TraceContext traceContext;
+    private TmlLogTraceContext tmlLogTraceContext;
 
     @BeforeEach
     public void setUp() {
-        traceContext = TraceContext.Holder.get();
-        traceContext.clear();
+        tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+        tmlLogTraceContext.clear();
     }
 
     @AfterEach
     public void tearDown() {
-        traceContext.clear();
+        tmlLogTraceContext.clear();
     }
 
     @Test
     @DisplayName("验证1：普通线程池无包装时traceId传递情况")
     public void testNormalThreadPoolWithoutWrap() throws Exception {
         String mainTraceId = "normal-pool-test";
-        traceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
         
         ExecutorService pool = Executors.newSingleThreadExecutor();
         CountDownLatch latch = new CountDownLatch(1);
         AtomicReference<String> childTraceId = new AtomicReference<>();
         
         pool.submit(() -> {
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             childTraceId.set(traceId);
             log.info("[普通线程池] 主线程traceId: {}, 子线程traceId: {}", mainTraceId, traceId);
             latch.countDown();
@@ -81,7 +81,7 @@ public class TmlLogTtlVerificationTest {
     @DisplayName("验证2：TTL包装线程池后traceId传递")
     public void testWrappedThreadPool() throws Exception {
         String mainTraceId = "wrapped-pool-test";
-        traceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
         
         ExecutorService normalPool = Executors.newSingleThreadExecutor();
         ExecutorService wrappedPool = TmlLogExecutorsTrace.wrap(normalPool);
@@ -90,7 +90,7 @@ public class TmlLogTtlVerificationTest {
         AtomicReference<String> childTraceId = new AtomicReference<>();
         
         wrappedPool.submit(() -> {
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             childTraceId.set(traceId);
             log.info("[包装线程池] 主线程traceId: {}, 子线程traceId: {}", mainTraceId, traceId);
             latch.countDown();
@@ -110,7 +110,7 @@ public class TmlLogTtlVerificationTest {
     @DisplayName("验证3：对比包装前后的差异")
     public void testCompareWrappedAndUnwrapped() throws Exception {
         String mainTraceId = "compare-test";
-        traceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
         
         // 测试未包装的线程池
         ExecutorService normalPool = Executors.newSingleThreadExecutor();
@@ -118,7 +118,7 @@ public class TmlLogTtlVerificationTest {
         AtomicReference<String> normalResult = new AtomicReference<>();
         
         normalPool.submit(() -> {
-            normalResult.set(traceContext.get(TmlLogConstant.TRACE_ID));
+            normalResult.set(tmlLogTraceContext.get(TmlLogConstant.TRACE_ID));
             latch1.countDown();
         });
         latch1.await(5, TimeUnit.SECONDS);
@@ -130,7 +130,7 @@ public class TmlLogTtlVerificationTest {
         AtomicReference<String> wrappedResult = new AtomicReference<>();
         
         wrappedPool.submit(() -> {
-            wrappedResult.set(traceContext.get(TmlLogConstant.TRACE_ID));
+            wrappedResult.set(tmlLogTraceContext.get(TmlLogConstant.TRACE_ID));
             latch2.countDown();
         });
         latch2.await(5, TimeUnit.SECONDS);

@@ -1,7 +1,7 @@
 package io.github.timemachinelab.log;
 
 import io.github.timemachinelab.log.config.TmlLogConstant;
-import io.github.timemachinelab.log.context.TraceContext;
+import io.github.timemachinelab.log.context.TmlLogTraceContext;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.MediaType;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -70,8 +69,8 @@ public class TmlLogIntegratedScenarioTest {
         String webTraceId = "web-order-trace-" + System.currentTimeMillis();
         
         // 手动设置traceId到MDC（因为测试环境中过滤器可能不生效）
-        TraceContext traceContext = TraceContext.Holder.get();
-        traceContext.set(TmlLogConstant.TRACE_ID, webTraceId);
+        TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, webTraceId);
         
         try {
             MvcResult result = mockMvc.perform(post("/integrated/orders")
@@ -96,7 +95,7 @@ public class TmlLogIntegratedScenarioTest {
             
             log.info("✓ Web订单创建完成，traceId: {}, response: {}", webTraceId, responseBody);
         } finally {
-            traceContext.clear();
+            tmlLogTraceContext.clear();
         }
         
         // 2. 等待定时任务执行（检查超时订单）
@@ -124,14 +123,14 @@ public class TmlLogIntegratedScenarioTest {
         
         int requestCount = 5;
         Map<String, String> webTraceIds = new ConcurrentHashMap<>();
-        TraceContext traceContext = TraceContext.Holder.get();
+        TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
         
         // 1. 顺序发起多个Web请求（MockMvc不是线程安全的）
         for (int i = 0; i < requestCount; i++) {
             String traceId = "multiple-order-" + i;
             
             // 手动设置traceId
-            traceContext.set(TmlLogConstant.TRACE_ID, traceId);
+            tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, traceId);
             
             try {
                 MvcResult result = mockMvc.perform(post("/integrated/orders")
@@ -147,7 +146,7 @@ public class TmlLogIntegratedScenarioTest {
                 
                 log.info("✓ 请求{} 完成，traceId: {}", i, traceId);
             } finally {
-                traceContext.clear();
+                tmlLogTraceContext.clear();
             }
         }
         
@@ -186,8 +185,8 @@ public class TmlLogIntegratedScenarioTest {
         // 1. Web请求触发异步处理
         String webTraceId = "async-order-trace-" + System.currentTimeMillis();
         
-        TraceContext traceContext = TraceContext.Holder.get();
-        traceContext.set(TmlLogConstant.TRACE_ID, webTraceId);
+        TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, webTraceId);
         
         try {
             MvcResult result = mockMvc.perform(post("/integrated/orders/async")
@@ -205,7 +204,7 @@ public class TmlLogIntegratedScenarioTest {
             
             log.info("✓ Web异步订单创建完成，traceId: {}", webTraceId);
         } finally {
-            traceContext.clear();
+            tmlLogTraceContext.clear();
         }
         
         // 2. 等待异步任务完成
@@ -233,8 +232,8 @@ public class TmlLogIntegratedScenarioTest {
         public String createOrder(@RequestParam Long userId,
                                  @RequestParam String productName,
                                  @RequestParam Double amount) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Web-Controller] 接收订单创建请求 - userId: {}, productName: {}, traceId: {}", 
                     userId, productName, traceId);
@@ -261,8 +260,8 @@ public class TmlLogIntegratedScenarioTest {
         public String createOrderAsync(@RequestParam Long userId,
                                       @RequestParam String productName,
                                       @RequestParam Double amount) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Web-Controller] 接收异步订单创建请求 - userId: {}, traceId: {}", 
                     userId, traceId);
@@ -295,8 +294,8 @@ public class TmlLogIntegratedScenarioTest {
         private OrderRepository orderRepository;
 
         public OrderResponse createOrder(OrderRequest request) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Web-Service] 处理订单创建 - userId: {}, traceId: {}", request.getUserId(), traceId);
             
@@ -314,8 +313,8 @@ public class TmlLogIntegratedScenarioTest {
         }
 
         public OrderResponse createOrderAsync(OrderRequest request) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Web-Service] 处理异步订单创建 - userId: {}, traceId: {}", request.getUserId(), traceId);
             
@@ -323,7 +322,7 @@ public class TmlLogIntegratedScenarioTest {
             
             // 异步处理订单
             CompletableFuture.runAsync(() -> {
-                String asyncTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+                String asyncTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
                 log.info("[Web-Service-Async] 异步处理订单 - orderId: {}, traceId: {}", orderId, asyncTraceId);
                 
                 // 模拟异步业务处理
@@ -350,8 +349,8 @@ public class TmlLogIntegratedScenarioTest {
         private static final Map<Long, OrderData> ORDER_STORE = new ConcurrentHashMap<>();
 
         public Long saveOrder(OrderRequest request) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Web-Repository] 保存订单到数据库 - userId: {}, traceId: {}", 
                     request.getUserId(), traceId);
@@ -374,8 +373,8 @@ public class TmlLogIntegratedScenarioTest {
         }
 
         public Map<Long, OrderData> findTimeoutOrders() {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Scheduler-Repository] 查询超时订单 - traceId: {}", traceId);
             
@@ -393,8 +392,8 @@ public class TmlLogIntegratedScenarioTest {
         }
 
         public void updateOrderStatus(Long orderId, String status) {
-            TraceContext traceContext = TraceContext.Holder.get();
-            String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+            String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             log.info("[Scheduler-Repository] 更新订单状态 - orderId: {}, status: {}, traceId: {}", 
                     orderId, status, traceId);
@@ -436,11 +435,11 @@ public class TmlLogIntegratedScenarioTest {
                 return;
             }
 
-            TraceContext traceContext = TraceContext.Holder.get();
+            TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
             
             // 手动生成traceId（模拟TmlLogScheduleTrace切面的行为）
-            String traceId = traceContext.generateTraceId();
-            traceContext.set(TmlLogConstant.TRACE_ID, traceId);
+            String traceId = tmlLogTraceContext.generateTraceId();
+            tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, traceId);
             
             try {
                 log.info("[Scheduler] 开始检查超时订单 - traceId: {}", traceId);
@@ -474,7 +473,7 @@ public class TmlLogIntegratedScenarioTest {
                 log.error("[Scheduler] 检查超时订单失败 - traceId: {}", traceId, e);
             } finally {
                 // 清理MDC
-                traceContext.remove(TmlLogConstant.TRACE_ID);
+                tmlLogTraceContext.remove(TmlLogConstant.TRACE_ID);
                 executionLatch.countDown();
             }
         }

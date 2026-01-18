@@ -1,14 +1,13 @@
 package io.github.timemachinelab.log;
 
-import io.github.timemachinelab.log.context.TraceContext;
-import org.slf4j.MDC;
+import io.github.timemachinelab.log.context.TmlLogTraceContext;
 
 /**
  * @author glser
  * @since 2026/1/18
  */
 
-public class TestTraceContext implements TraceContext {
+public class TestTmlLogTraceContext implements TmlLogTraceContext {
     @Override
     public void set(String key, String value) {
 

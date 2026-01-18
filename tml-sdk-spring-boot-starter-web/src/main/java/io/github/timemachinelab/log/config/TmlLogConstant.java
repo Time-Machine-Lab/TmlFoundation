@@ -46,5 +46,7 @@ public class TmlLogConstant {
         DEV, TEST, PROD
     }
 
+    public static String PATTERN_VALUE = "%d{yyyy-MM-dd HH:mm:ss} %highlight{[%X{traceId}]} [%thread] %highlight{%-5level}{FATAL=red, ERROR=red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=blue} %style{%logger{36}}{cyan} - %msg%n";
+
     public static final String TRACE_ID_HEADER = "Tml-Trace-Id";
 }

@@ -1,6 +1,6 @@
 package io.github.timemachinelab.log.interceptor;
 
-import io.github.timemachinelab.log.context.TraceContext;
+import io.github.timemachinelab.log.context.TmlLogTraceContext;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -17,8 +17,8 @@ public class TmlLogScheduleTrace {
 
     @Before("execution(* *(..)) && @annotation(org.springframework.scheduling.annotation.Scheduled)")
     public void beforeMethod() {
-        TraceContext traceContext = TraceContext.Holder.get();
-        traceContext.set(traceContext.getTraceIdKey(), traceContext.generateTraceId());
+        TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+        tmlLogTraceContext.set(tmlLogTraceContext.getTraceIdKey(), tmlLogTraceContext.generateTraceId());
     }
 
     /**
@@ -27,7 +27,7 @@ public class TmlLogScheduleTrace {
      */
     @After("@annotation(org.springframework.scheduling.annotation.Scheduled)")
     public void afterMethod() {
-        TraceContext traceContext = TraceContext.Holder.get();
-        traceContext.clear();
+        TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+        tmlLogTraceContext.clear();
     }
 }

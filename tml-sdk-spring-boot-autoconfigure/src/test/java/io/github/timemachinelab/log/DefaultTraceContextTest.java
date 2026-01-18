@@ -1,8 +1,8 @@
 package io.github.timemachinelab.log;
 
 import io.github.timemachinelab.log.config.TmlLogConstant;
-import io.github.timemachinelab.log.context.TraceContext;
 import io.github.timemachinelab.log.context.TmlLogTraceContext;
+import io.github.timemachinelab.log.context.DefaultTraceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,26 +33,26 @@ import static org.junit.jupiter.api.Assertions.*;
 @ActiveProfiles("log-test")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 @Slf4j
-public class TmlLogTraceContextTest {
+public class DefaultTraceContextTest {
 
-    private TraceContext traceContext;
+    private TmlLogTraceContext tmlLogTraceContext;
 
     @BeforeEach
     public void setUp() {
-        traceContext = TraceContext.Holder.get();
-        traceContext.clear();
+        tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+        tmlLogTraceContext.clear();
     }
 
     @AfterEach
     public void tearDown() {
-        traceContext.clear();
+        tmlLogTraceContext.clear();
     }
 
     @Test
     @DisplayName("测试TraceContext单例模式")
     public void testTraceContextSingleton() {
-        TraceContext instance1 = TraceContext.Holder.get();
-        TraceContext instance2 = TraceContext.Holder.get();
+        TmlLogTraceContext instance1 = TmlLogTraceContext.Holder.get();
+        TmlLogTraceContext instance2 = TmlLogTraceContext.Holder.get();
         
         assertNotNull(instance1, "TraceContext实例不应为null");
         assertNotNull(instance2, "TraceContext实例不应为null");
@@ -64,9 +64,9 @@ public class TmlLogTraceContextTest {
     @Test
     @DisplayName("测试默认TraceContext实现类型")
     public void testDefaultTraceContextType() {
-        TraceContext context = TraceContext.Holder.get();
+        TmlLogTraceContext context = TmlLogTraceContext.Holder.get();
         
-        assertTrue(context instanceof TmlLogTraceContext, 
+        assertTrue(context instanceof DefaultTraceContext,
                 "默认实现应该是TmlLogTraceContext");
         
         log.info("✓ 默认TraceContext实现类型测试通过");
@@ -78,8 +78,8 @@ public class TmlLogTraceContextTest {
         String key = "testKey";
         String value = "testValue";
         
-        traceContext.set(key, value);
-        String retrievedValue = traceContext.get(key);
+        tmlLogTraceContext.set(key, value);
+        String retrievedValue = tmlLogTraceContext.get(key);
         
         assertEquals(value, retrievedValue, "get应该返回set的值");
         
@@ -93,11 +93,11 @@ public class TmlLogTraceContextTest {
         String value1 = "value1";
         String value2 = "value2";
         
-        traceContext.set(key, value1);
-        assertEquals(value1, traceContext.get(key));
+        tmlLogTraceContext.set(key, value1);
+        assertEquals(value1, tmlLogTraceContext.get(key));
         
-        traceContext.set(key, value2);
-        assertEquals(value2, traceContext.get(key), "新值应该覆盖旧值");
+        tmlLogTraceContext.set(key, value2);
+        assertEquals(value2, tmlLogTraceContext.get(key), "新值应该覆盖旧值");
         
         log.info("✓ set覆盖已有值测试通过");
     }
@@ -105,7 +105,7 @@ public class TmlLogTraceContextTest {
     @Test
     @DisplayName("测试get不存在的key")
     public void testGetNonExistentKey() {
-        String value = traceContext.get("nonExistentKey");
+        String value = tmlLogTraceContext.get("nonExistentKey");
         
         assertNull(value, "不存在的key应该返回null");
         
@@ -118,11 +118,11 @@ public class TmlLogTraceContextTest {
         String key = "testKey";
         String value = "testValue";
         
-        traceContext.set(key, value);
-        assertNotNull(traceContext.get(key));
+        tmlLogTraceContext.set(key, value);
+        assertNotNull(tmlLogTraceContext.get(key));
         
-        traceContext.remove(key);
-        assertNull(traceContext.get(key), "remove后应该返回null");
+        tmlLogTraceContext.remove(key);
+        assertNull(tmlLogTraceContext.get(key), "remove后应该返回null");
         
         log.info("✓ remove功能测试通过");
     }
@@ -131,7 +131,7 @@ public class TmlLogTraceContextTest {
     @DisplayName("测试remove不存在的key")
     public void testRemoveNonExistentKey() {
         assertDoesNotThrow(() -> {
-            traceContext.remove("nonExistentKey");
+            tmlLogTraceContext.remove("nonExistentKey");
         }, "remove不存在的key不应该抛出异常");
         
         log.info("✓ remove不存在的key测试通过");
@@ -140,19 +140,19 @@ public class TmlLogTraceContextTest {
     @Test
     @DisplayName("测试clear功能")
     public void testClear() {
-        traceContext.set("key1", "value1");
-        traceContext.set("key2", "value2");
-        traceContext.set("key3", "value3");
+        tmlLogTraceContext.set("key1", "value1");
+        tmlLogTraceContext.set("key2", "value2");
+        tmlLogTraceContext.set("key3", "value3");
         
-        assertNotNull(traceContext.get("key1"));
-        assertNotNull(traceContext.get("key2"));
-        assertNotNull(traceContext.get("key3"));
+        assertNotNull(tmlLogTraceContext.get("key1"));
+        assertNotNull(tmlLogTraceContext.get("key2"));
+        assertNotNull(tmlLogTraceContext.get("key3"));
         
-        traceContext.clear();
+        tmlLogTraceContext.clear();
         
-        assertNull(traceContext.get("key1"), "clear后所有key都应该被清除");
-        assertNull(traceContext.get("key2"), "clear后所有key都应该被清除");
-        assertNull(traceContext.get("key3"), "clear后所有key都应该被清除");
+        assertNull(tmlLogTraceContext.get("key1"), "clear后所有key都应该被清除");
+        assertNull(tmlLogTraceContext.get("key2"), "clear后所有key都应该被清除");
+        assertNull(tmlLogTraceContext.get("key3"), "clear后所有key都应该被清除");
         
         log.info("✓ clear功能测试通过");
     }
@@ -160,11 +160,11 @@ public class TmlLogTraceContextTest {
     @Test
     @DisplayName("测试getAll功能")
     public void testGetAll() {
-        traceContext.set("key1", "value1");
-        traceContext.set("key2", "value2");
-        traceContext.set("key3", "value3");
+        tmlLogTraceContext.set("key1", "value1");
+        tmlLogTraceContext.set("key2", "value2");
+        tmlLogTraceContext.set("key3", "value3");
         
-        Map<String, String> allValues = traceContext.getAll();
+        Map<String, String> allValues = tmlLogTraceContext.getAll();
         
         assertNotNull(allValues, "getAll不应该返回null");
         assertTrue(allValues.size() >= 3, "应该包含所有设置的值");
@@ -178,9 +178,9 @@ public class TmlLogTraceContextTest {
     @Test
     @DisplayName("测试getAll在空MDC时的行为")
     public void testGetAllWhenEmpty() {
-        traceContext.clear();
+        tmlLogTraceContext.clear();
         
-        Map<String, String> allValues = traceContext.getAll();
+        Map<String, String> allValues = tmlLogTraceContext.getAll();
         
         assertNotNull(allValues, "getAll不应该返回null");
         assertTrue(allValues.isEmpty(), "空MDC应该返回空Map");
@@ -191,8 +191,8 @@ public class TmlLogTraceContextTest {
     @Test
     @DisplayName("测试generateTraceId功能")
     public void testGenerateTraceId() {
-        String traceId1 = traceContext.generateTraceId();
-        String traceId2 = traceContext.generateTraceId();
+        String traceId1 = tmlLogTraceContext.generateTraceId();
+        String traceId2 = tmlLogTraceContext.generateTraceId();
         
         assertNotNull(traceId1, "生成的traceId不应为null");
         assertNotNull(traceId2, "生成的traceId不应为null");
@@ -210,7 +210,7 @@ public class TmlLogTraceContextTest {
     @Test
     @DisplayName("测试getTraceIdHeader默认值")
     public void testGetTraceIdHeader() {
-        String header = traceContext.getTraceIdHeader();
+        String header = tmlLogTraceContext.getTraceIdHeader();
         
         assertNotNull(header, "traceId header不应为null");
         assertEquals(TmlLogConstant.TRACE_ID_HEADER, header, 
@@ -222,7 +222,7 @@ public class TmlLogTraceContextTest {
     @Test
     @DisplayName("测试getTraceIdKey默认值")
     public void testGetTraceIdKey() {
-        String key = traceContext.getTraceIdKey();
+        String key = tmlLogTraceContext.getTraceIdKey();
         
         assertNotNull(key, "traceId key不应为null");
         assertEquals(TmlLogConstant.TRACE_ID, key, 
@@ -244,12 +244,12 @@ public class TmlLogTraceContextTest {
             executor.submit(() -> {
                 try {
                     String traceId = "thread-" + threadId + "-trace-id";
-                    traceContext.set(TmlLogConstant.TRACE_ID, traceId);
+                    tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, traceId);
                     
                     // 模拟业务处理
                     Thread.sleep(10);
                     
-                    String retrievedTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+                    String retrievedTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
                     threadTraceIds.put(threadId, retrievedTraceId);
                     
                     log.info("[线程{}] 设置traceId: {}, 获取traceId: {}", 
@@ -280,15 +280,15 @@ public class TmlLogTraceContextTest {
     @DisplayName("测试自定义TraceContext替换默认实现")
     public void testCustomTraceContextReplacement() {
         // 保存原始实现
-        TraceContext original = TraceContext.Holder.get();
+        TmlLogTraceContext original = TmlLogTraceContext.Holder.get();
         
         try {
             // 创建自定义实现
-            CustomTraceContext custom = new CustomTraceContext();
-            TraceContext.Holder.set(custom);
+            CustomTmlLogTraceContext custom = new CustomTmlLogTraceContext();
+            TmlLogTraceContext.Holder.set(custom);
             
             // 验证已替换
-            TraceContext current = TraceContext.Holder.get();
+            TmlLogTraceContext current = TmlLogTraceContext.Holder.get();
             assertSame(custom, current, "应该使用自定义实现");
             
             // 测试自定义实现的功能
@@ -303,7 +303,7 @@ public class TmlLogTraceContextTest {
             log.info("✓ 自定义TraceContext替换测试通过");
         } finally {
             // 恢复原始实现
-            TraceContext.Holder.set(original);
+            TmlLogTraceContext.Holder.set(original);
         }
     }
 
@@ -321,8 +321,8 @@ public class TmlLogTraceContextTest {
                     String key = "key-" + (index % 10);
                     String value = "value-" + index;
                     
-                    traceContext.set(key, value);
-                    String retrieved = traceContext.get(key);
+                    tmlLogTraceContext.set(key, value);
+                    String retrieved = tmlLogTraceContext.get(key);
                     
                     // 验证能正确读写
                     assertNotNull(retrieved);
@@ -351,8 +351,8 @@ public class TmlLogTraceContextTest {
             String key = "key-" + (i % 100);
             String value = "value-" + i;
             
-            traceContext.set(key, value);
-            traceContext.get(key);
+            tmlLogTraceContext.set(key, value);
+            tmlLogTraceContext.get(key);
         }
         
         long endTime = System.currentTimeMillis();
@@ -367,7 +367,7 @@ public class TmlLogTraceContextTest {
     /**
      * 自定义TraceContext实现，用于测试
      */
-    static class CustomTraceContext implements TraceContext {
+    static class CustomTmlLogTraceContext implements TmlLogTraceContext {
         private final Map<String, String> data = new ConcurrentHashMap<>();
 
         @Override

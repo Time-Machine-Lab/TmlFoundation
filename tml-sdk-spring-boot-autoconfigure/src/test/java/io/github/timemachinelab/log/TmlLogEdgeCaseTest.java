@@ -1,8 +1,7 @@
 package io.github.timemachinelab.log;
 
 import io.github.timemachinelab.log.config.TmlLogConstant;
-import io.github.timemachinelab.log.context.TraceContext;
-import io.github.timemachinelab.log.interceptor.TmlLogExecutorsTrace;
+import io.github.timemachinelab.log.context.TmlLogTraceContext;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,25 +30,25 @@ import static org.junit.jupiter.api.Assertions.*;
 @Slf4j
 public class TmlLogEdgeCaseTest {
 
-    private TraceContext traceContext;
+    private TmlLogTraceContext tmlLogTraceContext;
 
     @BeforeEach
     public void setUp() {
-        traceContext = TraceContext.Holder.get();
-        traceContext.clear();
+        tmlLogTraceContext = TmlLogTraceContext.Holder.get();
+        tmlLogTraceContext.clear();
     }
 
     @AfterEach
     public void tearDown() {
-        traceContext.clear();
+        tmlLogTraceContext.clear();
     }
 
     @Test
     @DisplayName("测试空traceId的处理")
     public void testEmptyTraceId() {
         // 设置空字符串
-        traceContext.set(TmlLogConstant.TRACE_ID, "");
-        String traceId = traceContext.get(TmlLogConstant.TRACE_ID);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, "");
+        String traceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
         
         // 空字符串应该被设置
         assertEquals("", traceId, "空字符串应该被正确设置");
@@ -62,9 +61,9 @@ public class TmlLogEdgeCaseTest {
     public void testNullKey() {
         // 设置null key不应该抛出异常
         assertDoesNotThrow(() -> {
-            traceContext.set(null, "value");
-            traceContext.get(null);
-            traceContext.remove(null);
+            tmlLogTraceContext.set(null, "value");
+            tmlLogTraceContext.get(null);
+            tmlLogTraceContext.remove(null);
         }, "null key应该被安全处理");
         
         log.info("✓ null key处理测试通过");
@@ -75,7 +74,7 @@ public class TmlLogEdgeCaseTest {
     public void testNullValue() {
         // 设置null value不应该抛出异常
         assertDoesNotThrow(() -> {
-            traceContext.set(TmlLogConstant.TRACE_ID, null);
+            tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, null);
         }, "null value应该被安全处理");
         
         log.info("✓ null value处理测试通过");
@@ -91,8 +90,8 @@ public class TmlLogEdgeCaseTest {
         }
         String longTraceId = sb.toString();
         
-        traceContext.set(TmlLogConstant.TRACE_ID, longTraceId);
-        String retrievedTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, longTraceId);
+        String retrievedTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
         
         assertEquals(longTraceId, retrievedTraceId, "超长traceId应该被正确存储和获取");
         assertEquals(1000, retrievedTraceId.length(), "traceId长度应该保持不变");
@@ -113,8 +112,8 @@ public class TmlLogEdgeCaseTest {
         };
         
         for (String specialTraceId : specialTraceIds) {
-            traceContext.set(TmlLogConstant.TRACE_ID, specialTraceId);
-            String retrievedTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, specialTraceId);
+            String retrievedTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             
             assertEquals(specialTraceId, retrievedTraceId, 
                     "特殊字符traceId应该被正确处理: " + specialTraceId);
@@ -130,14 +129,14 @@ public class TmlLogEdgeCaseTest {
         String traceId2 = "second-trace-id";
         String traceId3 = "third-trace-id";
         
-        traceContext.set(TmlLogConstant.TRACE_ID, traceId1);
-        assertEquals(traceId1, traceContext.get(TmlLogConstant.TRACE_ID));
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, traceId1);
+        assertEquals(traceId1, tmlLogTraceContext.get(TmlLogConstant.TRACE_ID));
         
-        traceContext.set(TmlLogConstant.TRACE_ID, traceId2);
-        assertEquals(traceId2, traceContext.get(TmlLogConstant.TRACE_ID), "后设置的值应该覆盖前面的值");
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, traceId2);
+        assertEquals(traceId2, tmlLogTraceContext.get(TmlLogConstant.TRACE_ID), "后设置的值应该覆盖前面的值");
         
-        traceContext.set(TmlLogConstant.TRACE_ID, traceId3);
-        assertEquals(traceId3, traceContext.get(TmlLogConstant.TRACE_ID), "最后设置的值应该生效");
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, traceId3);
+        assertEquals(traceId3, tmlLogTraceContext.get(TmlLogConstant.TRACE_ID), "最后设置的值应该生效");
         
         log.info("✓ 重复设置traceId测试通过");
     }
@@ -152,16 +151,16 @@ public class TmlLogEdgeCaseTest {
         testData.put("sessionId", "session-789");
         
         // 设置多个key
-        testData.forEach(traceContext::set);
+        testData.forEach(tmlLogTraceContext::set);
         
         // 验证所有key都能正确获取
         testData.forEach((key, expectedValue) -> {
-            String actualValue = traceContext.get(key);
+            String actualValue = tmlLogTraceContext.get(key);
             assertEquals(expectedValue, actualValue, "Key " + key + " 的值应该正确");
         });
         
         // 获取所有值
-        Map<String, String> allValues = traceContext.getAll();
+        Map<String, String> allValues = tmlLogTraceContext.getAll();
         assertTrue(allValues.size() >= testData.size(), "应该能获取到所有设置的值");
         
         log.info("✓ 多个key的MDC操作测试通过");
@@ -171,21 +170,21 @@ public class TmlLogEdgeCaseTest {
     @DisplayName("测试clear操作")
     public void testClearOperation() {
         // 设置多个值
-        traceContext.set("key1", "value1");
-        traceContext.set("key2", "value2");
-        traceContext.set(TmlLogConstant.TRACE_ID, "test-trace-id");
+        tmlLogTraceContext.set("key1", "value1");
+        tmlLogTraceContext.set("key2", "value2");
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, "test-trace-id");
         
-        assertNotNull(traceContext.get("key1"));
-        assertNotNull(traceContext.get("key2"));
-        assertNotNull(traceContext.get(TmlLogConstant.TRACE_ID));
+        assertNotNull(tmlLogTraceContext.get("key1"));
+        assertNotNull(tmlLogTraceContext.get("key2"));
+        assertNotNull(tmlLogTraceContext.get(TmlLogConstant.TRACE_ID));
         
         // 清空
-        traceContext.clear();
+        tmlLogTraceContext.clear();
         
         // 验证所有值都被清空
-        assertNull(traceContext.get("key1"), "clear后key1应该为null");
-        assertNull(traceContext.get("key2"), "clear后key2应该为null");
-        assertNull(traceContext.get(TmlLogConstant.TRACE_ID), "clear后traceId应该为null");
+        assertNull(tmlLogTraceContext.get("key1"), "clear后key1应该为null");
+        assertNull(tmlLogTraceContext.get("key2"), "clear后key2应该为null");
+        assertNull(tmlLogTraceContext.get(TmlLogConstant.TRACE_ID), "clear后traceId应该为null");
         
         log.info("✓ clear操作测试通过");
     }
@@ -193,17 +192,17 @@ public class TmlLogEdgeCaseTest {
     @Test
     @DisplayName("测试remove操作")
     public void testRemoveOperation() {
-        traceContext.set("key1", "value1");
-        traceContext.set("key2", "value2");
+        tmlLogTraceContext.set("key1", "value1");
+        tmlLogTraceContext.set("key2", "value2");
         
-        assertNotNull(traceContext.get("key1"));
-        assertNotNull(traceContext.get("key2"));
+        assertNotNull(tmlLogTraceContext.get("key1"));
+        assertNotNull(tmlLogTraceContext.get("key2"));
         
         // 移除key1
-        traceContext.remove("key1");
+        tmlLogTraceContext.remove("key1");
         
-        assertNull(traceContext.get("key1"), "remove后key1应该为null");
-        assertNotNull(traceContext.get("key2"), "key2应该仍然存在");
+        assertNull(tmlLogTraceContext.get("key1"), "remove后key1应该为null");
+        assertNotNull(tmlLogTraceContext.get("key2"), "key2应该仍然存在");
         
         log.info("✓ remove操作测试通过");
     }
@@ -212,13 +211,13 @@ public class TmlLogEdgeCaseTest {
     @DisplayName("测试线程池异常情况下的traceId")
     public void testThreadPoolWithException() throws Exception {
         String mainTraceId = "exception-test-trace-id";
-        traceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
         
         ExecutorService pool = Executors.newSingleThreadExecutor();
         CountDownLatch latch = new CountDownLatch(1);
         
         Future<?> future = pool.submit(() -> {
-            String threadTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            String threadTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             log.info("[异常测试] traceId: {}", threadTraceId);
             
             assertEquals(mainTraceId, threadTraceId, "异常前应该能获取到traceId");
@@ -243,14 +242,14 @@ public class TmlLogEdgeCaseTest {
     @DisplayName("测试线程中断情况下的traceId")
     public void testThreadInterruptWithTraceId() throws Exception {
         String mainTraceId = "interrupt-test-trace-id";
-        traceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
         
         ExecutorService pool = Executors.newSingleThreadExecutor();
         CountDownLatch startLatch = new CountDownLatch(1);
         CountDownLatch interruptLatch = new CountDownLatch(1);
         
         Future<?> future = pool.submit(() -> {
-            String threadTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+            String threadTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
             log.info("[中断测试] 开始执行，traceId: {}", threadTraceId);
             assertEquals(mainTraceId, threadTraceId);
             
@@ -260,7 +259,7 @@ public class TmlLogEdgeCaseTest {
                 // 等待被中断
                 Thread.sleep(10000);
             } catch (InterruptedException e) {
-                String interruptedTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+                String interruptedTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
                 log.info("[中断测试] 被中断，traceId: {}", interruptedTraceId);
                 assertEquals(mainTraceId, interruptedTraceId, "中断后应该仍能获取到traceId");
                 interruptLatch.countDown();
@@ -283,14 +282,14 @@ public class TmlLogEdgeCaseTest {
     @DisplayName("测试快速创建销毁线程池")
     public void testRapidThreadPoolCreationDestruction() throws Exception {
         String mainTraceId = "rapid-pool-trace-id";
-        traceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
         
         for (int i = 0; i < 10; i++) {
             ExecutorService pool = Executors.newSingleThreadExecutor();
             CountDownLatch latch = new CountDownLatch(1);
             
             pool.submit(() -> {
-                String threadTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+                String threadTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
                 assertEquals(mainTraceId, threadTraceId);
                 latch.countDown();
             });
@@ -323,7 +322,7 @@ public class TmlLogEdgeCaseTest {
     @DisplayName("测试大量线程的线程池")
     public void testLargeThreadPool() throws Exception {
         String mainTraceId = "large-pool-trace-id";
-        traceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
+        tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, mainTraceId);
         
         ExecutorService pool = Executors.newFixedThreadPool(100);
         int taskCount = 1000;
@@ -331,7 +330,7 @@ public class TmlLogEdgeCaseTest {
         
         for (int i = 0; i < taskCount; i++) {
             pool.submit(() -> {
-                String threadTraceId = traceContext.get(TmlLogConstant.TRACE_ID);
+                String threadTraceId = tmlLogTraceContext.get(TmlLogConstant.TRACE_ID);
                 assertEquals(mainTraceId, threadTraceId);
                 latch.countDown();
             });
@@ -348,10 +347,10 @@ public class TmlLogEdgeCaseTest {
     @Test
     @DisplayName("测试getAll方法返回的Map修改不影响原数据")
     public void testGetAllImmutability() {
-        traceContext.set("key1", "value1");
-        traceContext.set("key2", "value2");
+        tmlLogTraceContext.set("key1", "value1");
+        tmlLogTraceContext.set("key2", "value2");
         
-        Map<String, String> allValues = traceContext.getAll();
+        Map<String, String> allValues = tmlLogTraceContext.getAll();
         
         // 尝试修改返回的Map
         assertDoesNotThrow(() -> {
@@ -360,8 +359,8 @@ public class TmlLogEdgeCaseTest {
         }, "修改返回的Map不应该抛出异常");
         
         // 验证原数据未被修改
-        assertEquals("value1", traceContext.get("key1"), "原数据key1应该未被修改");
-        assertNull(traceContext.get("key3"), "原数据不应该有key3");
+        assertEquals("value1", tmlLogTraceContext.get("key1"), "原数据key1应该未被修改");
+        assertNull(tmlLogTraceContext.get("key3"), "原数据不应该有key3");
         
         log.info("✓ getAll不可变性测试通过");
     }
@@ -370,15 +369,15 @@ public class TmlLogEdgeCaseTest {
     @DisplayName("测试自定义TraceContext实现")
     public void testCustomTraceContext() {
         // 保存原始实现
-        TraceContext original = TraceContext.Holder.get();
+        TmlLogTraceContext original = TmlLogTraceContext.Holder.get();
         
         try {
             // 设置自定义实现
-            TraceContext custom = new CustomTraceContext();
-            TraceContext.Holder.set(custom);
+            TmlLogTraceContext custom = new CustomTmlLogTraceContext();
+            TmlLogTraceContext.Holder.set(custom);
             
-            TraceContext current = TraceContext.Holder.get();
-            assertTrue(current instanceof CustomTraceContext, "应该使用自定义实现");
+            TmlLogTraceContext current = TmlLogTraceContext.Holder.get();
+            assertTrue(current instanceof CustomTmlLogTraceContext, "应该使用自定义实现");
             
             // 测试自定义实现
             current.set("test", "value");
@@ -387,7 +386,7 @@ public class TmlLogEdgeCaseTest {
             log.info("✓ 自定义TraceContext实现测试通过");
         } finally {
             // 恢复原始实现
-            TraceContext.Holder.set(original);
+            TmlLogTraceContext.Holder.set(original);
         }
     }
 
@@ -395,7 +394,7 @@ public class TmlLogEdgeCaseTest {
     @DisplayName("测试设置null TraceContext抛出异常")
     public void testSetNullTraceContext() {
         assertThrows(IllegalArgumentException.class, () -> {
-            TraceContext.Holder.set(null);
+            TmlLogTraceContext.Holder.set(null);
         }, "设置null TraceContext应该抛出IllegalArgumentException");
         
         log.info("✓ 设置null TraceContext异常测试通过");
@@ -404,7 +403,7 @@ public class TmlLogEdgeCaseTest {
     /**
      * 自定义TraceContext实现，用于测试
      */
-    static class CustomTraceContext implements TraceContext {
+    static class CustomTmlLogTraceContext implements TmlLogTraceContext {
         private final Map<String, String> data = new ConcurrentHashMap<>();
 
         @Override

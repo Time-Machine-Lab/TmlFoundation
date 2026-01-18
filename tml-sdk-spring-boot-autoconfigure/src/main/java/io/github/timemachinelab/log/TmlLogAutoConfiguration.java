@@ -4,7 +4,7 @@ package io.github.timemachinelab.log;
 import io.github.timemachinelab.constant.TmlConstant;
 import io.github.timemachinelab.log.config.TmlLogConstant;
 import io.github.timemachinelab.log.config.TmlLogProperties;
-import io.github.timemachinelab.log.context.TraceContext;
+import io.github.timemachinelab.log.context.TmlLogTraceContext;
 import io.github.timemachinelab.log.interceptor.TmlLogScheduleTrace;
 import io.github.timemachinelab.log.interceptor.TmlLogWebTrace;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,15 +30,15 @@ import javax.annotation.PostConstruct;
 public class TmlLogAutoConfiguration {
 
     @Autowired(required = false)
-    private TraceContext traceContext;
+    private TmlLogTraceContext tmlLogTraceContext;
 
     /**
-     * 如果用户注册了自定义 TraceContext Bean，自动替换默认实现
+     * 如果用户注册了自定义 TmlLogTraceContext Bean，自动替换默认实现
      */
     @PostConstruct
     public void initTraceContext() {
-        if (traceContext != null) {
-            TraceContext.Holder.set(traceContext);
+        if (tmlLogTraceContext != null) {
+            TmlLogTraceContext.Holder.set(tmlLogTraceContext);
         }
     }
 

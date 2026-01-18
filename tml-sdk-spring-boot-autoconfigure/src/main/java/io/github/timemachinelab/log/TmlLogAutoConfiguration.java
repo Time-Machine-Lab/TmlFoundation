@@ -7,12 +7,8 @@ import io.github.timemachinelab.log.config.TmlLogProperties;
 import io.github.timemachinelab.log.context.TraceContext;
 import io.github.timemachinelab.log.interceptor.TmlLogScheduleTrace;
 import io.github.timemachinelab.log.interceptor.TmlLogWebTrace;
-import io.github.timemachinelab.log.mdc.TmlLogMdc;
-import io.github.timemachinelab.log.mdc.TmlLogMdcAdapter;
-import io.github.timemachinelab.log.mdc.TmlLogMdcInit;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -22,7 +18,6 @@ import org.springframework.core.Ordered;
 import org.springframework.scheduling.annotation.Scheduled;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
 
 /**
  * 针对日志的自动配置类
@@ -45,25 +40,6 @@ public class TmlLogAutoConfiguration {
         if (traceContext != null) {
             TraceContext.Holder.set(traceContext);
         }
-    }
-
-    /**
-     * 注册默认的 TmlLogMdcAdapter
-     */
-    @Bean
-    @ConditionalOnMissingBean(TmlLogMdc.class)
-    @ConditionalOnProperty(prefix = TmlConstant.LOG, name = TmlLogConstant.TRACE_ID, havingValue = "true", matchIfMissing = true)
-    public TmlLogMdc tmlLogMdcAdapter() {
-        return new TmlLogMdcAdapter();
-    }
-
-    /**
-     * 注册 MDCAdapter 初始化器
-     */
-    @Bean
-    @ConditionalOnProperty(prefix = TmlConstant.LOG, name = TmlLogConstant.TRACE_ID, havingValue = "true", matchIfMissing = true)
-    public TmlLogMdcInit mdcAdapterInitializer(List<TmlLogMdc> mdcAdapter) {
-        return new TmlLogMdcInit(mdcAdapter);
     }
 
     /**

@@ -30,7 +30,7 @@ public class TmlLogWebTrace extends OncePerRequestFilter {
                 traceId = traceContext.generateTraceId();
             }
             // 将 traceId 放入 MDC
-            traceContext.set(traceContext.getTraceIdName(), traceId);
+            traceContext.set(traceContext.getTraceIdKey(), traceId);
             // 响应结果也放入 traceId，后期 elk 查询
             response.setHeader(traceContext.getTraceIdHeader(), traceId);
             filterChain.doFilter(request, response);

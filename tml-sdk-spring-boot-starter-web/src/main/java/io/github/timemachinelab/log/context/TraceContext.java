@@ -34,7 +34,7 @@ public interface TraceContext {
         return TmlLogConstant.TRACE_ID_HEADER;
     }
 
-    default String getTraceIdName() {
+    default String getTraceIdKey() {
         return TmlLogConstant.TRACE_ID;
     }
 

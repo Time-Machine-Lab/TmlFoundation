@@ -21,10 +21,10 @@ public class TmlLogScheduleTrace {
         try {
             // 生成新的 traceId
             String traceId = traceContext.generateTraceId();
-            traceContext.set(traceContext.getTraceIdName(), traceId);
+            traceContext.set(traceContext.getTraceIdKey(), traceId);
             return joinPoint.proceed();
         } finally {
-            traceContext.remove(traceContext.getTraceIdName());
+            traceContext.remove(traceContext.getTraceIdKey());
         }
     }
 }

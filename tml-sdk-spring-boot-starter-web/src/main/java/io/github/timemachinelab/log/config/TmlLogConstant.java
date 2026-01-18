@@ -47,6 +47,4 @@ public class TmlLogConstant {
     }
 
     public static final String TRACE_ID_HEADER = "Tml-Trace-Id";
-
-    public static final String MDC_TTL = "TTL";
 }

@@ -30,6 +30,7 @@ jobs:
           echo "$GPG_PRIVATE_KEY" | gpg --batch --import
           gpg --list-secret-keys || true
 
+
       - name: Create temporary Maven settings.xml
         env:
           OSSRH_TOKEN_USERNAME: ${{ secrets.OSSRH_TOKEN_USERNAME }}

@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: tml-log-test
+
+tml:
+  log:
+    enable: true
+    fileName: test-app
+    path: ./logs
+    level: DEBUG
+    fileMaxSize: 100M
+    fileMaxDays: 3
+    charset: UTF-8
+    traceId: true
+    env: DEV
+#    pattern: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"

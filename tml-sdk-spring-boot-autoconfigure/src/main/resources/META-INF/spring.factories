@@ -1,0 +1,5 @@
+org.springframework.boot.env.EnvironmentPostProcessor=\
+io.github.timemachinelab.log.TmlLogEnvPostProcessor
+
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+io.github.timemachinelab.log.TmlLogAutoConfiguration

@@ -6,9 +6,10 @@
         <Property name="LEVEL">${sys:tml.log.level}</Property>
         <Property name="FILE_MAX_SIZE">${sys:tml.log.fileMaxSize}</Property>
         <Property name="FILE_MAX_DAYS">${sys:tml.log.fileMaxDays}</Property>
-        <Property name="CONSOLE_PATTERN">%d{sys-MM-dd HH:mm:ss} %highlight{[%X{traceId}]} [%thread] %highlight{%-5level}{FATAL=red, ERROR=red, WARN=yellow, INFO=green, DEBUG=cyan, TRACE=blue} %style{%logger{36}}{cyan} - %msg%n</Property>
+        <Property name="CONSOLE_PATTERN">${sys:tml.log.pattern}</Property>
         <Property name="CHARSET">${sys:tml.log.charset}</Property>
         <Property name="ENV">${sys:tml.log.env}</Property>
+        <Property name="TRACE_ID">${sys:tml.log.traceId}</Property>
     </Properties>
 
     <Appenders>
@@ -17,14 +18,13 @@
             <PatternLayout pattern="${CONSOLE_PATTERN}" charset="${CHARSET}" disableAnsi="false"/>
         </Console>
 
-        <!-- 文件滚动输出 -->
+        <!-- 文件滚动输出 - JSON格式便于Filebeat采集 -->
         <RollingFile name="RollingFile"
                      fileName="${PATH}/${FILE_NAME}/${FILE_NAME}.log"
                      filePattern="${PATH}/${FILE_NAME}/%d{yyyy-MM-dd}/%d{yyyy-MM-dd_HH}-%i.log.gz">
-            <JsonLayout compact="true" eventEol="true" includeStacktrace="true" locationInfo="false">
+            <JsonLayout compact="true" eventEol="true" includeStacktrace="true" locationInfo="false" properties="true">
                 <KeyValuePair key="app" value="${FILE_NAME}"/>
                 <KeyValuePair key="env" value="${ENV}"/>
-                <KeyValuePair key="traceId" value="${ctx:traceId}"/>
             </JsonLayout>
             <Policies>
                 <!-- 每小时滚动一次 -->

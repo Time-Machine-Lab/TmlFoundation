@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.github.timemachinelab</groupId>
         <artifactId>TmlFoundation</artifactId>
-        <version>1.1.0-alpha.3</version>
+        <version>1.1.0-alpha.4</version>
     </parent>
 
     <artifactId>tml-sdk-spring-boot-autoconfigure</artifactId>
@@ -25,4 +25,32 @@
         <connection>scm:git:https://github.com/Time-Machine-Lab/TmlFoundation.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/Time-Machine-Lab/TmlFoundation.git</developerConnection>
     </scm>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.timemachinelab</groupId>
+            <artifactId>tml-sdk-java-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.github.timemachinelab</groupId>
+            <artifactId>tml-sdk-spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.junit.vintage</groupId>
+                    <artifactId>junit-vintage-engine</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
 </project>

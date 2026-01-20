@@ -1,5 +1,7 @@
-package io.github.timemachinelab.log.config;
+package io.github.timemachinelab.log;
 
+import io.github.timemachinelab.constant.TmlConstant;
+import io.github.timemachinelab.log.config.TmlLogProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.env.EnvironmentPostProcessor;
@@ -7,16 +9,17 @@ import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 /**
- * @Author glser
- * @Date 2026/01/15
- * @description: 从yml中加载日志相关配置
+ * 从application.yml中加载日志相关配置
+ *
+ * @author glser
+ * @since 2026/01/16
  */
 public class TmlLogEnvPostProcessor implements EnvironmentPostProcessor, Ordered {
     @Override
     public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
         // 从application.yml中读取日志相关配置
         TmlLogProperties tmlLogProperties = Binder.get(environment)
-                .bind(TmlLog.PREFIX, TmlLogProperties.class)
+                .bind(TmlConstant.LOG, TmlLogProperties.class)
                 .orElseGet(TmlLogProperties::new);
         // 加载数据到环境变量
         if (tmlLogProperties == null || !tmlLogProperties.isEnable()) {
@@ -24,9 +27,6 @@ public class TmlLogEnvPostProcessor implements EnvironmentPostProcessor, Ordered
             System.setProperty("logging.config", "classpath:log4j2-noop.xml");
             return;
         }
-        // env从spring.profiles.active获取
-        String env = environment.getProperty("spring.profiles.active");
-        tmlLogProperties.setEnv(env);
         tmlLogProperties.apply();
     }
 

@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.github.timemachinelab</groupId>
         <artifactId>TmlFoundation</artifactId>
-        <version>1.1.0-alpha.3</version>
+        <version>1.1.0-alpha.4</version>
     </parent>
 
     <artifactId>tml-sdk-spring-boot-starter-web</artifactId>
@@ -19,6 +19,8 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <lombok.version>1.18.30</lombok.version>
+        <ttl.version>2.14.5</ttl.version>
     </properties>
 
     <dependencies>
@@ -55,12 +57,13 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>transmittable-thread-local</artifactId>
-            <version>2.14.5</version>
+            <version>${ttl.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
         </dependency>
 
         <!--springBoot-test-->

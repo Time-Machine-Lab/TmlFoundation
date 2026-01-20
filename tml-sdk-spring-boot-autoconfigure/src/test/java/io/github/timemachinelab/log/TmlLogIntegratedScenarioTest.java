@@ -436,7 +436,7 @@ public class TmlLogIntegratedScenarioTest {
             }
 
             TmlLogTraceContext tmlLogTraceContext = TmlLogTraceContext.Holder.get();
-            
+
             // 手动生成traceId（模拟TmlLogScheduleTrace切面的行为）
             String traceId = tmlLogTraceContext.generateTraceId();
             tmlLogTraceContext.set(TmlLogConstant.TRACE_ID, traceId);
@@ -473,7 +473,7 @@ public class TmlLogIntegratedScenarioTest {
                 log.error("[Scheduler] 检查超时订单失败 - traceId: {}", traceId, e);
             } finally {
                 // 清理MDC
-                tmlLogTraceContext.remove(TmlLogConstant.TRACE_ID);
+//                tmlLogTraceContext.remove(TmlLogConstant.TRACE_ID);
                 executionLatch.countDown();
             }
         }

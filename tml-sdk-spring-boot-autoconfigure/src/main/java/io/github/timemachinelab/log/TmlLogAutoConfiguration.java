@@ -65,7 +65,6 @@ public class TmlLogAutoConfiguration {
      */
     @Bean
     @ConditionalOnProperty(prefix = TmlConstant.LOG, name = TmlLogConstant.TRACE_ID, havingValue = "true", matchIfMissing = true)
-    @ConditionalOnClass(Scheduled.class)
     public TmlLogScheduleTrace traceIdScheduledAspect() {
         return new TmlLogScheduleTrace();
     }

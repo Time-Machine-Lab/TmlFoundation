@@ -36,7 +36,7 @@ public class TmlLogWebTrace extends OncePerRequestFilter {
             filterChain.doFilter(request, response);
         } finally {
             // 请求结束后清理 MDC，防止线程复用导致数据污染
-            tmlLogTraceContext.remove(TmlLogConstant.TRACE_ID);
+            tmlLogTraceContext.clear();
         }
     }
 }

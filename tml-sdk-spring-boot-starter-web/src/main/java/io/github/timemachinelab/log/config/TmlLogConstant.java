@@ -30,7 +30,7 @@ public class TmlLogConstant {
 
     public static String FILE_NAME_VALUE = "unknown";
 
-    public static String PATH_VALUE = "/app/log";
+    public static String PATH_VALUE = "/app/logs";
 
     public enum Level {
         TRACE, DEBUG, INFO, WARN, ERROR

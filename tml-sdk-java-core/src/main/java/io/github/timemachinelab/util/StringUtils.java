@@ -2,7 +2,16 @@ package io.github.timemachinelab.util;
 
 import java.util.Locale;
 
-public class StringUtils {
+/**
+ * TML String utility.
+ *
+ * @author Genius
+ */
+public final class StringUtils {
+
+    private StringUtils() {
+
+    }
 
     /**
      * Gets a CharSequence length or {@code 0} if the CharSequence is

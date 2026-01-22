@@ -2,7 +2,17 @@ package io.github.timemachinelab.util;
 
 import java.lang.reflect.Array;
 
-public class ArrayUtils {
+/**
+ * Array utility.
+ *
+ * @author Genius
+ */
+@Beta
+public final class ArrayUtils {
+
+    private ArrayUtils() {
+
+    }
 
     public static int getLength(final Object array) {
         if (array == null) {
@@ -12,6 +22,10 @@ public class ArrayUtils {
     }
 
     public static boolean isEmpty(final Object[] array) {
-        return getLength(array) == 0;
+        return (array == null || array.length == 0);
+    }
+
+    public static boolean notEmpty(final Object[] array) {
+        return !isEmpty(array);
     }
 }

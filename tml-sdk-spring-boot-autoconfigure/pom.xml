@@ -32,22 +32,30 @@
             <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
         <!--注解支持（@PostConstruct 等） -->
         <dependency>
             <groupId>javax.annotation</groupId>
             <artifactId>javax.annotation-api</artifactId>
         </dependency>
 
-        <!-- slf4j提供mdc实现日志链路传递 -->
+        <!-- slf4j提供mdc实现日志链路传递（仅API，实现由starter提供） -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
+            <optional>true</optional>
         </dependency>
 
-        <!-- slf4j提供mdc实现日志链路传递 -->
+        <!-- log4j提供mdc实现日志链路传递（仅API，实现由starter提供） -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
+            <optional>true</optional>
         </dependency>
 
         <!-- 基于ttl实现多线程链路追踪 -->

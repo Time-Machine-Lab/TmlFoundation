@@ -1,4 +1,4 @@
-package io.github.timemachinelab.log;
+package io.github.timemachinelab.log.autoconfig;
 
 import io.github.timemachinelab.constant.TmlConstant;
 import io.github.timemachinelab.log.config.TmlLogProperties;

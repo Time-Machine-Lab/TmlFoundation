@@ -7,7 +7,7 @@
     <parent>
         <groupId>io.github.timemachinelab</groupId>
         <artifactId>TmlFoundation</artifactId>
-        <version>1.1.0-alpha.5</version>
+        <version>1.1.0-SNASHOT</version>
     </parent>
 
     <artifactId>tml-sdk-spring-boot-starter-web</artifactId>
@@ -24,49 +24,45 @@
     </properties>
 
     <dependencies>
+        <!-- 引入 autoconfigure 模块（包含自动配置逻辑） -->
+        <dependency>
+            <groupId>io.github.timemachinelab</groupId>
+            <artifactId>tml-sdk-spring-boot-autoconfigure</artifactId>
+        </dependency>
+
+        <!-- 引入 web 模块（包含 web 相关工具类） -->
         <dependency>
             <groupId>io.github.timemachinelab</groupId>
             <artifactId>tml-sdk-java-web</artifactId>
         </dependency>
 
+        <!-- Spring Boot Web Starter（包含 spring-web、servlet-api、默认 logback） -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <!-- 使用log4j2作为底层日志，故需要先排除logback -->
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
-        <!-- 引入 Log4j2 依赖 -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-log4j2</artifactId>
-        </dependency>
-
-        <!-- AOP 支持，用于定时任务 traceId 切面 -->
+        <!-- AOP 支持（用于定时任务 TraceId 切面） -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
 
-        <!-- TTL 支持线程池 traceId 传递 -->
+        <!-- TTL 支持（用于线程池 TraceId 传递） -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>transmittable-thread-local</artifactId>
             <version>${ttl.version}</version>
         </dependency>
 
+        <!-- Lombok（用于 @Slf4j 等注解） -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
         </dependency>
 
-        <!--springBoot-test-->
+        <!-- 测试依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -76,7 +72,16 @@
                     <groupId>org.junit.vintage</groupId>
                     <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-starter-logging</artifactId>
+                </exclusion>
             </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-log4j2</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

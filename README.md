@@ -68,7 +68,7 @@ TF4J 聚焦 Java / JVM 生态，同时为 Web、Go、Python 等侧的基础设�
     <dependency>
       <groupId>io.github.timemachinelab</groupId>
       <artifactId>tml-sdk-java-bom</artifactId>
-      <version>1.1.0-alpha.5</version>
+      <version>1.1.0-SNASHOT</version>
       <type>pom</type>
       <scope>import</scope>
     </dependency>

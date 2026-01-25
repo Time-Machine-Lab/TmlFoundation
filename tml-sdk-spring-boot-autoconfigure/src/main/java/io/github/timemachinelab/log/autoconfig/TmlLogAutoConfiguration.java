@@ -1,4 +1,4 @@
-package io.github.timemachinelab.log;
+package io.github.timemachinelab.log.autoconfig;
 
 
 import io.github.timemachinelab.constant.TmlConstant;
@@ -15,7 +15,6 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import javax.annotation.PostConstruct;
 
@@ -27,6 +26,7 @@ import javax.annotation.PostConstruct;
  */
 @Configuration
 @EnableConfigurationProperties(TmlLogProperties.class)
+@ConditionalOnClass(name = "org.apache.logging.log4j.spi.ThreadContextMap")
 public class TmlLogAutoConfiguration {
 
     @Autowired(required = false)

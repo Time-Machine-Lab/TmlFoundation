@@ -3,11 +3,6 @@ package io.github.timemachinelab.util;
 import java.util.*;
 
 public class CollectionUtils {
-    static final float DEFAULT_LOAD_FACTOR = 0.75F;
-
-    public CollectionUtils() {
-    }
-
     public static boolean isEmpty(Collection<?> collection) {
         return collection == null || collection.isEmpty();
     }
@@ -21,27 +16,9 @@ public class CollectionUtils {
     }
 
     public static <E> void mergeArrayIntoCollection(E[] array, Collection<E> collection) {
-        int len = array.length;
-
-        collection.addAll(Arrays.asList(array).subList(0, len));
-    }
-
-    public static <E> boolean contains(Iterator<E> iterator, E element) {
-        if (iterator != null) {
-            while (iterator.hasNext()) {
-                Object candidate = iterator.next();
-                if (Objects.equals(candidate, element)) {
-                    return true;
-                } else if (candidate != null
-                        && element != null
-                        && candidate.getClass().isArray()
-                        && element.getClass().isArray()) {
-                    return arrayEquals(candidate, element);
-                }
-            }
+        if (array != null && array.length > 0 && collection != null) {
+            collection.addAll(Arrays.asList(array));
         }
-
-        return false;
     }
 
     public static <E> boolean arrayEquals(Object o1, Object o2) {
@@ -68,6 +45,24 @@ public class CollectionUtils {
             return o1 instanceof short[] && o2 instanceof short[]
                     && Arrays.equals((short[]) ((short[]) o1), (short[]) ((short[]) o2));
         }
+    }
+
+    public static <E> boolean contains(Iterator<E> iterator, E element) {
+        if (iterator != null) {
+            while (iterator.hasNext()) {
+                Object candidate = iterator.next();
+                if (Objects.equals(candidate, element)) {
+                    return true;
+                } else if (candidate != null
+                        && element != null
+                        && candidate.getClass().isArray()
+                        && element.getClass().isArray()) {
+                    return arrayEquals(candidate, element);
+                }
+            }
+        }
+
+        return false;
     }
 
     public static <E> boolean contains(Collection<E> collection, E element) {

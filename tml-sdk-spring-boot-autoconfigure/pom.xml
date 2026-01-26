@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.github.timemachinelab</groupId>
         <artifactId>TmlFoundation</artifactId>
-        <version>1.1.0-SNASHOT</version>
+        <version>1.2.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>tml-sdk-spring-boot-autoconfigure</artifactId>
@@ -20,7 +20,7 @@
     </properties>
 
     <dependencies>
-        <!-- 核心模块 -->
+        <!-- tml基础核心模块 -->
         <dependency>
             <groupId>io.github.timemachinelab</groupId>
             <artifactId>tml-sdk-java-core</artifactId>
@@ -44,14 +44,14 @@
             <artifactId>javax.annotation-api</artifactId>
         </dependency>
 
-        <!-- slf4j提供mdc实现日志链路传递（仅API，实现由starter提供） -->
+        <!-- slf4j提供mdc实现日志链路传递 -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <optional>true</optional>
         </dependency>
 
-        <!-- log4j提供mdc实现日志链路传递（仅API，实现由starter提供） -->
+        <!-- log4j提供mdc实现日志链路传递 -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
@@ -77,7 +77,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
-            <scope>provided</scope>
+            <optional>true</optional>
         </dependency>
 
         <!-- AOP 支持 -->

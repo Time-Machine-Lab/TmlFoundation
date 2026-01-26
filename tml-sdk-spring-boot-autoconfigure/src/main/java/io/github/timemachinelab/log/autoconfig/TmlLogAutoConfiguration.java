@@ -26,7 +26,6 @@ import javax.annotation.PostConstruct;
  */
 @Configuration
 @EnableConfigurationProperties(TmlLogProperties.class)
-@ConditionalOnClass(name = "org.apache.logging.log4j.spi.ThreadContextMap")
 public class TmlLogAutoConfiguration {
 
     @Autowired(required = false)

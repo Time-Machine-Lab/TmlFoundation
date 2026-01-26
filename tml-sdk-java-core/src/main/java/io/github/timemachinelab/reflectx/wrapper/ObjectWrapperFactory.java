@@ -1,26 +1,21 @@
 package io.github.timemachinelab.reflectx.wrapper;
 
-import java.util.Map;
+import io.github.timemachinelab.reflectx.MetaObject;
 
 /**
- * 描述: 包装器工厂
- * <p>根据对象类型（Bean vs Map）生产对应的 Wrapper
+ * 描述: 包装器工厂接口
  * @author suifeng
  * 日期: 2026/1/26 
  */
-public class ObjectWrapperFactory {
+public interface ObjectWrapperFactory {
 
-    @SuppressWarnings("unchecked")
-    public static ObjectWrapper getWrapperFor(Object obj) {
-        if (obj == null) {
-            throw new IllegalArgumentException("Cannot wrap null object");
-        }
-        if (obj instanceof ObjectWrapper) {
-            return (ObjectWrapper) obj;
-        }
-        if (obj instanceof Map) {
-            return new MapWrapper((Map<String, Object>) obj);
-        }
-        return new BeanWrapper(obj);
-    }
+    /**
+     * 是否有针对该对象的特殊包装器
+     */
+    boolean hasWrapperFor(Object object);
+
+    /**
+     * 获取包装器
+     */
+    ObjectWrapper getWrapperFor(MetaObject metaObject, Object object);
 }

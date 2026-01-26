@@ -1,5 +1,7 @@
 package io.github.timemachinelab.reflectx.wrapper;
 
+import io.github.timemachinelab.reflectx.MetaObject;
+import io.github.timemachinelab.reflectx.factory.ObjectFactory;
 import io.github.timemachinelab.reflectx.parser.PropertyTokenizer;
 
 import java.util.List;
@@ -41,4 +43,10 @@ public interface ObjectWrapper {
      * 向集合添加一组元素
      */
     <E> void addAll(List<E> element);
+
+    /**
+     * 实例化属性值
+     * 当访问 deep.path 但中间断开时，调用此方法“修路”
+     */
+    MetaObject instantiatePropertyValue(String name, PropertyTokenizer prop, ObjectFactory objectFactory);
 }

@@ -1,7 +1,9 @@
 package io.github.timemachinelab.reflectx.wrapper;
 
+import io.github.timemachinelab.reflectx.MetaObject;
 import io.github.timemachinelab.reflectx.Reflector;
 import io.github.timemachinelab.reflectx.exception.ReflectionException;
+import io.github.timemachinelab.reflectx.factory.ObjectFactory;
 import io.github.timemachinelab.reflectx.invoker.Invoker;
 import io.github.timemachinelab.reflectx.parser.PropertyTokenizer;
 
@@ -57,6 +59,10 @@ public class BeanWrapper extends BaseWrapper {
 
     // 辅助方法：当遇到 items[0] 时，先获取 items 这个对象
     private Object resolveCollection(PropertyTokenizer prop, Object object) {
+        if ("".equals(prop.getName())) {
+            return object;
+        }
+        // 否则才是去取属性（例如 order.items[0]）
         return getBeanProperty(prop, object);
     }
 
@@ -137,5 +143,23 @@ public class BeanWrapper extends BaseWrapper {
     @Override
     public <E> void addAll(List<E> element) {
         throw new UnsupportedOperationException("Bean is not a collection");
+    }
+
+    @Override
+    public MetaObject instantiatePropertyValue(String name, PropertyTokenizer prop, ObjectFactory objectFactory) {
+        // 1. 获取 setter 参数类型 (例如: order 属性的类型是 Order.class)
+        Class<?> type = getSetterType(prop.getName());
+        try {
+            // 2. 只有工厂知道怎么创建这个类 (处理接口、私有构造等)
+            Object newObject = objectFactory.create(type);
+
+            // 3. 设值回去 (user.setOrder(newObject))
+            set(prop, newObject);
+
+            // 4. 返回包装后的 MetaObject，以便递归继续
+            return MetaObject.forObject(newObject, objectFactory, new DefaultObjectWrapperFactory());
+        } catch (Exception e) {
+            throw new ReflectionException("Cannot set value of property '" + name + "' because '" + name + "' is null and cannot be instantiated on instance of " + type.getName() + ". Cause:" + e.toString(), e);
+        }
     }
 }

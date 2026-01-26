@@ -1,7 +1,10 @@
 package io.github.timemachinelab.reflectx.wrapper;
 
+import io.github.timemachinelab.reflectx.MetaObject;
+import io.github.timemachinelab.reflectx.factory.ObjectFactory;
 import io.github.timemachinelab.reflectx.parser.PropertyTokenizer;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +50,14 @@ public class MapWrapper extends BaseWrapper {
         } else {
             return map.get(prop.getName());
         }
+    }
+
+    @Override
+    public MetaObject instantiatePropertyValue(String name, PropertyTokenizer prop, ObjectFactory objectFactory) {
+        // Map 中间断了，默认补一个 HashMap
+        HashMap<String, Object> map = new HashMap<>();
+        set(prop, map);
+        return MetaObject.forObject(map, objectFactory, new DefaultObjectWrapperFactory());
     }
 
     @Override public String[] getGetterNames() { return map.keySet().toArray(new String[0]); }

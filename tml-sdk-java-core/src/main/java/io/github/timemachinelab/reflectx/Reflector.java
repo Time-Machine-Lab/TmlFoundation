@@ -108,14 +108,25 @@ public class Reflector {
 
             // 如果没有 Getter，添加字段访问
             if (!getMethods.containsKey(field.getName())) {
-                getMethods.put(field.getName(), new GetFieldInvoker(field));
-                getTypes.put(field.getName(), field.getType());
+                try {
+                    getMethods.put(field.getName(), new GetFieldInvoker(field));
+                    getTypes.put(field.getName(), field.getType());
+                } catch (Throwable e) {
+                    // 如果是 JDK 内部类且被模块化拒绝，则忽略；否则抛出异常
+                    if (isJavaInternal(clazz)) continue;
+                    throw e;
+                }
             }
 
             // 如果没有 Setter，添加字段访问（排除 final 字段）
             if (!setMethods.containsKey(field.getName()) && !Modifier.isFinal(field.getModifiers())) {
-                setMethods.put(field.getName(), new SetFieldInvoker(field));
-                setTypes.put(field.getName(), field.getType());
+                try {
+                    setMethods.put(field.getName(), new SetFieldInvoker(field));
+                    setTypes.put(field.getName(), field.getType());
+                } catch (Throwable e) {
+                    if (isJavaInternal(clazz)) continue;
+                    throw e;
+                }
             }
         }
 
@@ -123,6 +134,11 @@ public class Reflector {
         if (clazz.getSuperclass() != null) {
             addFields(clazz.getSuperclass());
         }
+    }
+
+    private boolean isJavaInternal(Class<?> clazz) {
+        String name = clazz.getName();
+        return name.startsWith("java.") || name.startsWith("javax.");
     }
 
     private boolean isValidPropertyName(String name) {

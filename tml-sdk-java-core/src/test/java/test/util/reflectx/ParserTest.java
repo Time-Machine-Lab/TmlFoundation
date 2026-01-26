@@ -1,7 +1,7 @@
 package test.util.reflectx;
 
 
-import io.github.timemachinelab.reflectx.util.PropertyTokenizer;
+import io.github.timemachinelab.reflectx.parser.PropertyTokenizer;
 
 public class ParserTest {
 

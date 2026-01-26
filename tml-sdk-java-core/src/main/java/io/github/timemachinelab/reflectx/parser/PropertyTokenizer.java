@@ -1,4 +1,4 @@
-package io.github.timemachinelab.reflectx.util;
+package io.github.timemachinelab.reflectx.parser;
 
 import java.util.Iterator;
 

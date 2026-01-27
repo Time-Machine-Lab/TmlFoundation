@@ -6,7 +6,7 @@
     <parent>
         <groupId>io.github.timemachinelab</groupId>
         <artifactId>TmlFoundation</artifactId>
-        <version>1.1.0-alpha.5</version>
+        <version>1.2.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>tml-sdk-spring-boot-autoconfigure</artifactId>
@@ -19,24 +19,81 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <scm>
-        <tag>master</tag>
-        <url>https://github.com/Time-Machine-Lab/TmlFoundation</url>
-        <connection>scm:git:https://github.com/Time-Machine-Lab/TmlFoundation.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/Time-Machine-Lab/TmlFoundation.git</developerConnection>
-    </scm>
-
     <dependencies>
+        <!-- tml基础核心模块 -->
         <dependency>
             <groupId>io.github.timemachinelab</groupId>
             <artifactId>tml-sdk-java-core</artifactId>
         </dependency>
 
+        <!-- Spring Boot 自动配置 -->
         <dependency>
-            <groupId>io.github.timemachinelab</groupId>
-            <artifactId>tml-sdk-spring-boot-starter-web</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!--注解支持（@PostConstruct 等） -->
+        <dependency>
+            <groupId>javax.annotation</groupId>
+            <artifactId>javax.annotation-api</artifactId>
+        </dependency>
+
+        <!-- slf4j提供mdc实现日志链路传递 -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- log4j提供mdc实现日志链路传递 -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- 基于ttl实现多线程链路追踪 -->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>transmittable-thread-local</artifactId>
+            <version>2.14.5</version>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Servlet API -->
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>javax.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Spring Web -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- AOP 支持 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <dependency>
+            <groupId>org.aspectj</groupId>
+            <artifactId>aspectjweaver</artifactId>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- 测试依赖 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -46,11 +103,14 @@
                     <groupId>org.junit.vintage</groupId>
                     <artifactId>junit-vintage-engine</artifactId>
                 </exclusion>
-                <exclusion>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-starter-logging</artifactId>
-                </exclusion>
             </exclusions>
         </dependency>
     </dependencies>
+
+    <scm>
+        <tag>master</tag>
+        <url>https://github.com/Time-Machine-Lab/TmlFoundation</url>
+        <connection>scm:git:https://github.com/Time-Machine-Lab/TmlFoundation.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/Time-Machine-Lab/TmlFoundation.git</developerConnection>
+    </scm>
 </project>

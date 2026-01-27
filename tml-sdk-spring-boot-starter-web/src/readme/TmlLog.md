@@ -6,9 +6,10 @@ TmlLog 是一个开箱即用的日志配置模块，提供统一的日志格式�
 
 **核心特性：**
 - 🎯 基于 TTL 的 ThreadContextMap 实现多线程链路追踪
-- 🚀 HTTP 请求自动生成 traceId
-- ⏰ 定时任务自动生成 traceId
-- 🔄 支持多线程场景下的 traceId 传递
+- 🚀 HTTP 请求自动生成并传递 traceId
+- ⏰ 定时任务自动生成独立 traceId
+- 🔄 支持多线程、异步任务、线程池场景下的 traceId 自动传递
+- 🔌 可扩展的 TraceContext 接口，支持自定义实现
 - 📝 控制台彩色输出 + JSON 文件输出
 - 🗂️ 自动日志滚动和清理（按小时滚动，自动压缩）
 
@@ -21,7 +22,7 @@ TmlLog 是一个开箱即用的日志配置模块，提供统一的日志格式�
 ```yaml
 tml:
   log:
-    fileName: my-app
+    file-name: my-app
     path: /app/logs/myapp
 ```
 
@@ -48,13 +49,13 @@ tml:
 tml:
   log:
     enable: true
-    fileName: my-app
+    file-name: my-app
     path: /app/logs/myapp
     level: INFO
-    fileMaxSize: 200M
-    fileMaxDays: 30
+    file-max-size: 200M
+    file-max-days: 30
     charset: UTF-8
-    traceId: true
+    trace-id: true
     env: PROD
 ```
 
@@ -131,15 +132,62 @@ public class MyScheduledTask {
 
 ### 核心机制
 
-本模块通过 `TmlLogThreadContextMap` 实现了基于 TTL 的 Log4j2 ThreadContextMap，配置在 `log4j2.component.properties` 中：
+TmlLog 通过 `TmlLogThreadContextMap` 实现了基于 TTL 的 Log4j2 ThreadContextMap，配置在 `log4j2.component.properties` 中：
 
 ```properties
 log4j2.threadContextMap=io.github.timemachinelab.log.interceptor.TmlLogThreadContextMap
 ```
 
-TTL 的 `TransmittableThreadLocal` 支持在父子线程间自动传递数据，但需要满足以下条件之一。
+**核心原理：**
+- `TmlLogThreadContextMap` 使用 TTL 的 `TransmittableThreadLocal` 替代普通 `ThreadLocal`
+- `TransmittableThreadLocal` 的 `childValue()` 方法在创建子线程时自动复制父线程的值
+- Log4j2 通过 `%X{traceId}` 获取 ThreadContextMap 中的值
 
-### 方式一：使用 TTL Java Agent（推荐）
+### 使用方式对比
+
+| 使用方式 | 配置要求 | 适用场景 | 优点 | 缺点 |
+|---------|---------|---------|------|------|
+| **方式一：默认方式** | 无需配置 | `new Thread()`、简单线程池 | ✅ 开箱即用<br>✅ 零配置 | ⚠️ 线程池复用场景可能需要额外处理 |
+| **方式二：TTL Agent** | JVM 启动参数 | 所有场景（推荐生产环境） | ✅ 最彻底<br>✅ 零代码侵入<br>✅ 覆盖所有场景 | ⚠️ 需要修改启动参数 |
+| **方式三：手动包装** | 代码包装 | 无法使用 Agent 的场景 | ✅ 不需要修改启动参数 | ❌ 需要手动包装<br>❌ 容易遗漏 |
+
+### 方式一：默认方式（开箱即用）
+
+**无需任何配置，引入依赖即可使用。**
+
+`TransmittableThreadLocal` 的 `childValue()` 方法会在创建子线程时自动复制父线程的值，因此对于直接创建的子线程，traceId 会自动传递。
+
+**自动支持的场景：**
+
+```java
+// ✅ 直接创建线程
+new Thread(() -> {
+    log.info("traceId 自动传递");
+}).start();
+
+// ✅ 简单的线程池场景
+ExecutorService executor = Executors.newFixedThreadPool(10);
+executor.submit(() -> {
+    log.info("traceId 自动传递");
+});
+
+// ✅ CompletableFuture
+CompletableFuture.runAsync(() -> {
+    log.info("traceId 自动传递");
+});
+
+// ✅ Spring @Async（默认配置）
+@Async
+public void asyncMethod() {
+    log.info("traceId 自动传递");
+}
+```
+
+**说明：**
+- 对于大多数场景，默认方式已经足够
+- 如果遇到 traceId 未传递的情况，可以考虑使用 TTL Agent 或手动包装
+
+### 方式二：使用 TTL Java Agent
 
 在 JVM 启动参数中添加：
 
@@ -149,10 +197,11 @@ java -javaagent:transmittable-thread-local-2.x.x.jar -jar your-app.jar
 
 **优点：**
 - ✅ 零代码侵入，所有线程池自动支持
-- ✅ 包括 JDK 原生线程池、Spring @Async、CompletableFuture 等
+- ✅ 包括 JDK 原生线程池、Spring @Async、CompletableFuture、定时任务线程池等
 - ✅ 最简单、最彻底的解决方案
+- ✅ 性能开销极小
 
-**原理：** Agent 会在类加载时修改 JDK 线程池相关类的字节码，自动包装所有线程池。
+**原理：** Agent 会在类加载时修改 JDK 线程池相关类的字节码，自动包装所有线程池，确保线程池复用时 traceId 正确传递。
 
 **使用示例：**
 
@@ -183,9 +232,9 @@ public void scheduledTask() {
 }
 ```
 
-### 方式二：显式包装线程池或任务
+### 方式三：显式包装线程池或任务（不推荐）
 
-如果不使用 Agent，需要使用 `TmlLogExecutorsTrace` 工具类显式包装：
+如果不使用 Agent，且默认方式无法满足需求，可以使用 `TmlLogExecutorsTrace` 工具类显式包装：
 
 **优点：**
 - ✅ 不需要修改 JVM 启动参数
@@ -460,6 +509,7 @@ public class TmlLogThreadContextMap implements ThreadContextMap {
 ```properties
 log4j2.threadContextMap=io.github.timemachinelab.log.interceptor.TmlLogThreadContextMap
 ```
+如果需要使用其他的链路追踪工具，自定义实现ThreadContextMap，然后再上述配置替换成自己的
 
 ### TTL 的工作模式
 
@@ -540,27 +590,13 @@ public class CustomTraceContext implements TmlLogTraceContext {
 2. `fileName` 建议设置为应用名称，便于日志区分和 ELK 采集
 3. 生产环境建议 `level` 设置为 `INFO` 或 `WARN`
 4. 链路追踪默认开启，如需关闭设置 `tml.log.traceId=false`
-5. **推荐使用 TTL Java Agent**（`-javaagent:transmittable-thread-local-xxx.jar`），所有线程池自动支持 traceId 传递
-6. 如果不使用 Agent，需要用 `TmlLogExecutorsTrace.wrap()` 包装线程池或任务
+5. **默认方式已支持大多数场景**，无需额外配置
+6. 如果不使用 Agent 且默认方式无法满足需求，可使用 `TmlLogExecutorsTrace.wrap()` 包装线程池或任务
 7. 定时任务会自动生成新的 traceId，与 HTTP 请求的 traceId 相互独立
 8. 设置 `tml.log.enable=false` 会完全禁用日志模块，使用 `log4j2-noop.xml` 配置
 9. 可以通过实现 `TmlLogTraceContext` 接口并注册为 Bean 来自定义 traceId 的存储和生成方式
 
 ## 常见问题
-
-### Q: 为什么子线程的日志没有 traceId？
-
-A: 检查以下几点：
-1. 是否配置了 TTL Java Agent（`-javaagent:transmittable-thread-local-xxx.jar`）
-2. 如果没有使用 Agent，是否用 `TmlLogExecutorsTrace.wrap()` 包装了线程池或任务
-3. 确认 Log4j2 配置中使用了 `%X{traceId}` 占位符
-4. 确认 `log4j2.component.properties` 中配置了自定义 ThreadContextMap
-
-### Q: 使用 TTL Agent 和手动包装有什么区别？
-
-A: 
-- **TTL Agent**：自动模式，所有线程池都支持，无需修改代码，推荐生产环境使用
-- **手动包装**：需要显式调用 `TmlLogExecutorsTrace.wrap()`，适合无法修改启动参数的场景
 
 ### Q: 定时任务的 traceId 和 HTTP 请求的 traceId 会冲突吗？
 
@@ -578,18 +614,6 @@ httpHeaders.set(context.getTraceIdHeader(), traceId);
 
 ### Q: 日志文件在哪里？
 
-A: 默认路径为 `/app/log/{fileName}/{fileName}.log`，可通过 `tml.log.path` 和 `tml.log.fileName` 配置。
+A: 默认路径为 `/app/logs/{fileName}/{yyyy-MM-dd}/{yyyy-MM-dd_HH}.log.gz`，可通过 `tml.log.path` 和 `tml.log.fileName` 配置。
 
 ### Q: TmlLogExecutorsTrace 是必须的吗？
-
-A: 不是必须的。如果使用了 TTL Java Agent，`TmlLogExecutorsTrace` 是可选的。它主要用于不使用 Agent 的场景，或者需要显式控制某些特定线程池的情况。
-
-### Q: 为什么推荐使用 TTL Agent？
-
-A: TTL Agent 是最简单、最彻底的解决方案：
-- ✅ 零代码侵入
-- ✅ 自动支持所有线程池（包括第三方库）
-- ✅ 不会遗漏任何场景
-- ✅ 性能开销极小
-
-手动包装虽然灵活，但容易遗漏，且需要修改大量代码。

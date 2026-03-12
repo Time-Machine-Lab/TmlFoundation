@@ -1,0 +1,23 @@
+name: Discord Notification
+
+on:
+  release:
+    types: [published]
+  push:
+    branches: ['**']
+  pull_request:
+    types: [opened, closed]
+
+jobs:
+  discord-notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Discord Notification
+        uses: Time-Machine-Lab/TML-Github_Actions/actions/discord-github-notify@main
+        with:
+          webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
